@@ -19,10 +19,13 @@ defmodule Parear do
   end
 
   def unpair(stairs, person, another_person) do
-    update_pair_count(stairs, person, another_person, &(&1 - 1))
+    update_pair_count(stairs, person, another_person, &subtract_pair/1)
   end
 
   ##### Helping functions ####
+
+  defp subtract_pair(0), do: 0
+  defp subtract_pair(x), do: x - 1
   
   defp matching_new_pairs(persons, new_person) do
     Map.keys(persons)

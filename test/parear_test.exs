@@ -47,7 +47,6 @@ defmodule ParearTest do
     assert Map.get(persons, "Kenya") == %{ "Vitor" => 0, "Elvis" => 0 }
   end
     
-  @tag :pending
   test "Should not allow to unpair if they never paired" do
     persons = Parear.create_stairs("Another")
     |> Parear.add_person("Vitor")
