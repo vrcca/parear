@@ -1,58 +1,17 @@
 defmodule Parear do
 
-  defstruct id: nil, name: nil, persons: []
+  alias Parear.Stairs
 
-  def create_stairs(name) do
-    %Parear{ id: UUID.uuid4(),
-             name: name,
-             persons: %{}
-    }
-  end
+  defdelegate create_stairs(name), to: Stairs
 
-  def add_person(stairs = %Parear{ persons: current_persons }, name) do
-    updated_persons = matching_new_pairs(current_persons, name)
-    %{ stairs | persons: updated_persons }
-  end
+  defdelegate add_person(stairs, name), to: Stairs
 
-  def pair(stairs, person, another_person) do
-    update_pair_count(stairs, person, another_person, &(&1 + 1))
-  end
+  defdelegate pair(stairs, person, another_person), to: Stairs
 
-  def unpair(stairs, person, another_person) do
-    update_pair_count(stairs, person, another_person, &subtract_pair/1)
-  end
+  defdelegate unpair(stairs, person, another_person), to: Stairs
 
-  ##### Helping functions ####
+  defdelegate reset_all_counts(stairs), to: Stairs
 
-  defp subtract_pair(0), do: 0
-  defp subtract_pair(x), do: x - 1
-  
-  defp matching_new_pairs(persons, new_person) do
-    Map.keys(persons)
-    |> add_new_person_to_all(persons, new_person)
-    |> Map.put(new_person, all_possible_matches(persons))
-  end
+  defdelegate remove_person(stairs, name), to: Stairs
 
-  defp add_new_person_to_all(participants, persons, new_person) do
-    Enum.reduce(participants, persons, fn (participant, state) ->
-      Map.update(state, participant, %{}, &(Map.put(&1, new_person, 0)))
-    end)
-  end
-
-  defp all_possible_matches(persons) do
-    persons
-    |> Map.keys
-    |> Map.new(fn key -> {key, 0} end)
-  end
-
-  def get_and_update(data, key, fun) do
-    {current, updated} = fun.(Map.get(data, key))
-    {current, Map.put(data, key, updated)}
-  end
-  
-  defp update_pair_count(stairs, person, another_person, fun) do
-    stairs
-    |> update_in([:persons, person, another_person], fun)
-    |> update_in([:persons, another_person, person], fun)
-  end
 end
