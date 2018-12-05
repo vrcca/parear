@@ -67,6 +67,17 @@ defmodule ParearTest do
     assert Map.get(persons, "Kenya") == %{ "Elvis" => 0 }
     assert Map.get(persons, "Elvis") == %{ "Kenya" => 0 }
   end
+
+  @tag :pending
+  test "Should limit maximum of pairing between participants" do
+    { :error, msg } = Parear.create_stairs("Limited Stairs", limit: 2)
+    |> Parear.add_person("Elvis")
+    |> Parear.add_person("Vitor")
+    |> Parear.pair("Elvis", "Vitor")
+    |> Parear.pair("Elvis", "Vitor")
+    |> Parear.pair("Elvis", "Vitor")
+    assert msg == "limit_reached"
+  end
   
 
   defp stairs_with_two_persons() do

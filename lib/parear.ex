@@ -2,7 +2,7 @@ defmodule Parear do
 
   alias Parear.Stairs
 
-  defdelegate create_stairs(name), to: Stairs
+  defdelegate create_stairs(name, opts \\ []), to: Stairs
 
   defdelegate add_person(stairs, name), to: Stairs
 

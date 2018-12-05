@@ -2,12 +2,14 @@ defmodule Parear.Stairs do
 
   alias Parear.Stairs
   
-  defstruct id: nil, name: nil, persons: []
+  defstruct id: nil, name: nil, persons: [], limit: :infinity
 
-  def create_stairs(name) do
+  def create_stairs(name, opts) do
+    limit = Keyword.get(opts, :limit, :infinity)
     %Stairs{ id: UUID.uuid4(),
              name: name,
-             persons: %{}
+             persons: %{},
+             limit: limit
     }
   end
 
@@ -17,13 +19,9 @@ defmodule Parear.Stairs do
   end
 
   def remove_person(stairs, name) do
-    updated_stairs = update_in(stairs, [:persons], &(Map.drop(&1, [name])))
-    updated_stairs.persons
-    |> Enum.reduce(updated_stairs, fn ({ participant, _friends }, current_stairs) ->
-      update_in(current_stairs, [:persons, participant], fn friends ->
-        Map.drop(friends, [name])
-      end)
-    end)
+    stairs
+    |> remove_from_persons(name)
+    |> remove_from_each_participant(name)
   end
 
   def pair(stairs, person, another_person) do
@@ -76,4 +74,18 @@ defmodule Parear.Stairs do
     |> update_in([:persons, person, another_person], fun)
     |> update_in([:persons, another_person, person], fun)
   end
+
+  defp remove_from_persons(stairs, name) do
+    update_in(stairs, [:persons], &(Map.drop(&1, [name])))
+  end
+  
+  defp remove_from_each_participant(stairs = %Stairs{ persons: participants }, name) do
+    participants   
+    |> Enum.reduce(stairs, fn ({ participant, _friends }, current_stairs) ->
+      update_in(current_stairs, [:persons, participant], fn friends ->
+        Map.drop(friends, [name])
+      end)
+    end)
+  end
+
 end
