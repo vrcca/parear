@@ -1,17 +1,26 @@
 defmodule Parear do
+  def new_stairs(name, opts \\ []) do
+    {:ok, pid} = Parear.DynamicSupervisor.start_child(name, opts)
+    pid
+  end
 
-  alias Parear.Stairs
+  def add_person(stairs, name) do
+    GenServer.call(stairs, {:add_person, name})
+  end
 
-  defdelegate create_stairs(name, opts \\ []), to: Stairs
+  def pair(stairs, person, another_person) do
+    GenServer.call(stairs, {:pair, person, another_person})
+  end
 
-  defdelegate add_person(stairs, name), to: Stairs
+  def unpair(stairs, person, another_person) do
+    GenServer.call(stairs, {:unpair, person, another_person})
+  end
 
-  defdelegate pair(stairs, person, another_person), to: Stairs
+  def reset_all_counters(stairs) do
+    GenServer.call(stairs, {:reset_counters})
+  end
 
-  defdelegate unpair(stairs, person, another_person), to: Stairs
-
-  defdelegate reset_all_counts(stairs), to: Stairs
-
-  defdelegate remove_person(stairs, name), to: Stairs
-
+  def remove_person(stairs, name) do
+    GenServer.call(stairs, {:remove_person, name})
+  end
 end
