@@ -1,6 +1,11 @@
 defmodule Parear do
-  def new_stairs(name, opts \\ []) do
-    {:ok, pid} = Parear.DynamicSupervisor.start_child(name, opts)
+  def new_stairs(name, options \\ []) do
+    spec = {
+      Parear.Server,
+      %{name: name, options: options}
+    }
+
+    {:ok, pid} = DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
     pid
   end
 

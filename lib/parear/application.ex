@@ -6,6 +6,10 @@ defmodule Parear.Application do
   use Application
 
   def start(_type, _args) do
-    Parear.DynamicSupervisor.start_link([])
+    children = [
+      {DynamicSupervisor, strategy: :one_for_one, name: Parear.DynamicSupervisor}
+    ]
+
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
 end

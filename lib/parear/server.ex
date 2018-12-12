@@ -3,7 +3,7 @@ defmodule Parear.Server do
 
   alias Parear.Stairs
 
-  def start_link(_, args) do
+  def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
 
