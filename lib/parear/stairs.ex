@@ -3,7 +3,7 @@ defmodule Parear.Stairs do
 
   defstruct id: nil, name: nil, persons: [], limit: :infinity
 
-  def new(name, opts) do
+  def new(name, opts \\ []) do
     limit = Keyword.get(opts, :limit, :infinity)
     %Stairs{id: UUID.uuid4(), name: name, persons: %{}, limit: limit}
   end

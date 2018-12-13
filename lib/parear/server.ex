@@ -36,4 +36,8 @@ defmodule Parear.Server do
     new_stairs = Stairs.reset_all_counters(stairs)
     {:reply, :ok, new_stairs}
   end
+
+  def handle_call({:list}, _from, stairs) do
+    {:reply, {:ok, stairs}, stairs}
+  end
 end

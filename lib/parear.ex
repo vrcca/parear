@@ -28,4 +28,8 @@ defmodule Parear do
   def remove_person(stairs, name) do
     GenServer.call(stairs, {:remove_person, name})
   end
+
+  def list(stairs) do
+    GenServer.call(stairs, {:list})
+  end
 end
