@@ -11,33 +11,38 @@ defmodule Parear.Server do
     {:ok, Stairs.new(name, options)}
   end
 
-  def handle_call({:add_person, name}, _from, stairs) do
-    new_stairs = Stairs.add_person(stairs, name)
-    {:reply, :ok, new_stairs}
+  def handle_call({:add_participant, name}, _from, stairs) do
+    Stairs.add_participant(stairs, name)
+    |> reply_ok()
   end
 
-  def handle_call({:pair, person, another_person}, _from, stairs) do
-    new_stairs = Stairs.pair(stairs, person, another_person)
+  def handle_call({:pair, participant, another}, _from, stairs) do
     # TODO: handle unsuccessful pair
-    {:reply, :ok, new_stairs}
+    Stairs.pair(stairs, participant, another)
+    |> reply_ok()
   end
 
-  def handle_call({:unpair, person, another_person}, _from, stairs) do
-    new_stairs = Stairs.unpair(stairs, person, another_person)
-    {:reply, :ok, new_stairs}
+  def handle_call({:unpair, participant, another}, _from, stairs) do
+    Stairs.unpair(stairs, participant, another)
+    |> reply_ok()
   end
 
-  def handle_call({:remove_person, name}, _from, stairs) do
-    new_stairs = Stairs.remove_person(stairs, name)
-    {:reply, :ok, new_stairs}
+  def handle_call({:remove_participant, name}, _from, stairs) do
+    Stairs.remove_participant(stairs, name)
+    |> reply_ok()
   end
 
   def handle_call({:reset_counters}, _from, stairs) do
-    new_stairs = Stairs.reset_all_counters(stairs)
-    {:reply, :ok, new_stairs}
+    Stairs.reset_all_counters(stairs)
+    |> reply_ok()
   end
 
   def handle_call({:list}, _from, stairs) do
-    {:reply, {:ok, stairs}, stairs}
+    reply_ok(stairs)
+  end
+
+  def reply_ok(new_state) do
+    %{participants: participants} = new_state
+    {:reply, {:ok, %{stairs: participants}}, new_state}
   end
 end
