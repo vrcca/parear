@@ -81,7 +81,6 @@ defmodule Parear.StairsTest do
     assert Map.get(participants, "Elvis") == %{"Kenya" => 0}
   end
 
-  @tag :pending
   test "Should limit maximum of pairing between participants" do
     {:error, msg} =
       Stairs.new("Limited Stairs", limit: 2)

@@ -17,9 +17,8 @@ defmodule Parear.Server do
   end
 
   def handle_call({:pair, participant, another}, _from, stairs) do
-    # TODO: handle unsuccessful pair
     Stairs.pair(stairs, participant, another)
-    |> reply_ok()
+    |> handle_result(stairs)
   end
 
   def handle_call({:unpair, participant, another}, _from, stairs) do
@@ -41,8 +40,16 @@ defmodule Parear.Server do
     reply_ok(stairs)
   end
 
-  def reply_ok(new_state) do
-    %{participants: participants} = new_state
-    {:reply, {:ok, %{stairs: participants}}, new_state}
+  defp handle_result(error = {:error, _msg}, stairs) do
+    {:reply, error, stairs}
+  end
+
+  defp handle_result(updated_stairs, _stairs) do
+    reply_ok(updated_stairs)
+  end
+
+  defp reply_ok(updated_stairs) do
+    %{participants: participants} = updated_stairs
+    {:reply, {:ok, %{stairs: participants}}, updated_stairs}
   end
 end

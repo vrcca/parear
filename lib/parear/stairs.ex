@@ -19,6 +19,16 @@ defmodule Parear.Stairs do
   end
 
   def pair(stairs, participant, another) do
+    current_total = stairs.participants[participant][another]
+    increase_pair_count(stairs, participant, another, current_total)
+  end
+
+  defp increase_pair_count(%Stairs{limit: limit}, _participant, _another, total)
+       when total == limit do
+    {:error, "maximum_limit_reached"}
+  end
+
+  defp increase_pair_count(stairs, participant, another, _total) do
     update_pair_count(stairs, participant, another, &(&1 + 1))
   end
 
