@@ -1,5 +1,5 @@
 defmodule Parear.Stairs do
-  alias Parear.Stairs
+  alias Parear.{Stairs, Validations}
 
   defstruct id: nil, name: nil, participants: [], limit: :infinity
 
@@ -18,22 +18,21 @@ defmodule Parear.Stairs do
     |> remove_from_each_participant(name)
   end
 
-  def pair(stairs, participant, another) do
-    current_total = stairs.participants[participant][another]
-    increase_pair_count(stairs, participant, another, current_total)
+  def pair(stairs, name, another_name) do
+    stairs
+    |> Validations.validate(name, another_name, :participants_exist)
+    |> Validations.validate(name, another_name, :pair_limit)
+    |> Validations.then(fn stairs ->
+      update_pair_count(stairs, name, another_name, &(&1 + 1))
+    end)
   end
 
-  defp increase_pair_count(%Stairs{limit: limit}, _participant, _another, total)
-       when total == limit do
-    {:error, "maximum_limit_reached"}
-  end
-
-  defp increase_pair_count(stairs, participant, another, _total) do
-    update_pair_count(stairs, participant, another, &(&1 + 1))
-  end
-
-  def unpair(stairs, participant, another) do
-    update_pair_count(stairs, participant, another, &max(&1 - 1, 0))
+  def unpair(stairs, name, another_name) do
+    stairs
+    |> Validations.validate(name, another_name, :participants_exist)
+    |> Validations.then(fn stairs ->
+      update_pair_count(stairs, name, another_name, &max(&1 - 1, 0))
+    end)
   end
 
   def reset_all_counters(stairs = %Stairs{participants: participants}) do
@@ -72,9 +71,11 @@ defmodule Parear.Stairs do
   end
 
   defp update_pair_count(stairs, participant, another_participant, fun) do
+    updated_value = fun.(stairs.participants[participant][another_participant])
+
     stairs
-    |> update_in([:participants, participant, another_participant], fun)
-    |> update_in([:participants, another_participant, participant], fun)
+    |> update_in([:participants, participant, another_participant], fn _ -> updated_value end)
+    |> update_in([:participants, another_participant, participant], fn _ -> updated_value end)
   end
 
   defp remove(stairs, name) do
