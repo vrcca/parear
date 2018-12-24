@@ -74,5 +74,15 @@ defmodule TextClient.Stairs do
     |> Enum.join("\n")
   end
 
+  defp on_result({:error, reason}, _title) do
+    [
+      "",
+      "Error!\n",
+      "#{reason}",
+      ""
+    ]
+    |> Enum.join("\n")
+  end
+
   defp sanitize_name(name), do: String.replace(name, ~r/\"/, "")
 end

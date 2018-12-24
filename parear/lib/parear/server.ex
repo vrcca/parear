@@ -23,7 +23,7 @@ defmodule Parear.Server do
 
   def handle_call({:unpair, participant, another}, _from, stairs) do
     Stairs.unpair(stairs, participant, another)
-    |> reply_ok()
+    |> handle_result(stairs)
   end
 
   def handle_call({:remove_participant, name}, _from, stairs) do
@@ -42,6 +42,10 @@ defmodule Parear.Server do
 
   defp handle_result(error = {:error, _msg}, stairs) do
     {:reply, error, stairs}
+  end
+
+  defp handle_result({:ok, updated_stairs}, _stairs) do
+    reply_ok(updated_stairs)
   end
 
   defp handle_result(updated_stairs, _stairs) do

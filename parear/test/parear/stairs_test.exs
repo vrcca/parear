@@ -59,9 +59,12 @@ defmodule Parear.StairsTest do
   end
 
   test "Should be able to reset stairs" do
-    participants =
+    {:ok, stairs} =
       stairs_with_two_participants()
       |> Stairs.pair("Vitor", "Kenya")
+
+    participants =
+      stairs
       |> Stairs.reset_all_counters()
       |> get_participants()
 
@@ -115,5 +118,7 @@ defmodule Parear.StairsTest do
     |> Stairs.add_participant("Kenya")
   end
 
-  defp get_participants(stairs), do: Map.get(stairs, :participants)
+  defp get_participants({:ok, stairs}), do: Map.get(stairs, :participants)
+  defp get_participants(error = {:error, _msg}), do: error
+  defp get_participants(stairs), do: get_participants({:ok, stairs})
 end

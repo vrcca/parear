@@ -36,6 +36,6 @@ defmodule Parear.Validations do
     end
   end
 
-  def then({:ok, stairs}, fun), do: fun.(stairs)
+  def then({:ok, stairs}, fun), do: {:ok, fun.(stairs)}
   def then(error, _fun), do: error
 end
