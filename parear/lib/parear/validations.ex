@@ -1,6 +1,12 @@
 defmodule Parear.Validations do
   alias Parear.Stairs
 
+  def prepare_with(stairs, name, another_name) do
+    fn type ->
+      validate(stairs, name, another_name, type)
+    end
+  end
+
   def validate(error = {:error, _msg}, _name, _another_name, _type), do: error
 
   def validate({:ok, stairs}, name, another_name, type),

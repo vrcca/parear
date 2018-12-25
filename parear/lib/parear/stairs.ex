@@ -19,20 +19,20 @@ defmodule Parear.Stairs do
   end
 
   def pair(stairs, name, another_name) do
-    stairs
-    |> Validations.validate(name, another_name, :participants_exist)
-    |> Validations.validate(name, another_name, :pair_limit)
-    |> Validations.then(fn stairs ->
-      update_pair_count(stairs, name, another_name, &(&1 + 1))
-    end)
+    validation = Validations.prepare_with(stairs, name, another_name)
+
+    with {:ok, _} <- validation.(:participants_exist),
+         {:ok, _} <- validation.(:pair_limit) do
+      {:ok, update_pair_count(stairs, name, another_name, &(&1 + 1))}
+    end
   end
 
   def unpair(stairs, name, another_name) do
-    stairs
-    |> Validations.validate(name, another_name, :participants_exist)
-    |> Validations.then(fn stairs ->
-      update_pair_count(stairs, name, another_name, &max(&1 - 1, 0))
-    end)
+    validation = Validations.prepare_with(stairs, name, another_name)
+
+    with {:ok, _} <- validation.(:participants_exist) do
+      {:ok, update_pair_count(stairs, name, another_name, &max(&1 - 1, 0))}
+    end
   end
 
   def reset_all_counters(stairs = %Stairs{participants: participants}) do

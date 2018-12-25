@@ -37,12 +37,13 @@ defmodule Parear.StairsTest do
   end
 
   test "Undo pairing two participants automatically undos their pair count" do
+    stairs = stairs_with_two_participants() |> Stairs.add_participant("Elvis")
+
     participants =
-      stairs_with_two_participants()
-      |> Stairs.add_participant("Elvis")
-      |> Stairs.pair("Vitor", "Kenya")
-      |> Stairs.unpair("Vitor", "Kenya")
-      |> get_participants()
+      with {:ok, paired_stairs} <- stairs |> Stairs.pair("Vitor", "Kenya"),
+           {:ok, unpaired_stairs} <- paired_stairs |> Stairs.unpair("Vitor", "Kenya") do
+        unpaired_stairs |> get_participants()
+      end
 
     assert Map.get(participants, "Vitor") == %{"Kenya" => 0, "Elvis" => 0}
     assert Map.get(participants, "Kenya") == %{"Vitor" => 0, "Elvis" => 0}
@@ -85,13 +86,16 @@ defmodule Parear.StairsTest do
   end
 
   test "Should limit maximum of pairing between participants" do
-    {:error, msg} =
+    stairs =
       Stairs.new("Limited Stairs", limit: 2)
       |> Stairs.add_participant("Elvis")
       |> Stairs.add_participant("Vitor")
-      |> Stairs.pair("Elvis", "Vitor")
-      |> Stairs.pair("Elvis", "Vitor")
-      |> Stairs.pair("Elvis", "Vitor")
+
+    {:error, msg} =
+      with {:ok, updated_stairs} <- Stairs.pair(stairs, "Elvis", "Vitor"),
+           {:ok, stairs_on_limit} <- Stairs.pair(updated_stairs, "Elvis", "Vitor") do
+        Stairs.pair(stairs_on_limit, "Elvis", "Vitor")
+      end
 
     assert msg == "maximum_limit_reached"
   end
