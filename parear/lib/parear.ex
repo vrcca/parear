@@ -28,4 +28,10 @@ defmodule Parear do
   def list(stairs) do
     GenServer.call(stairs, {:list})
   end
+
+  def reload(id) do
+    spec = {Parear.Server, %{id: id}}
+    {:ok, pid} = DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
+    pid
+  end
 end
