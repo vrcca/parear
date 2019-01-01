@@ -21,6 +21,7 @@ defmodule TextClient.MixProject do
 
   defp deps do
     [
+      {:repository, path: "../repository"},
       {:parear, path: "../parear"}
     ]
   end

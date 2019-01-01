@@ -1,4 +1,8 @@
-defmodule TextClient.StairsView do
+defmodule TextClient.Printer do
+  def from(%Parear.Stairs{id: id, participants: matrix}) do
+    "Stairs of id #{id}\n" <> from(%{stairs: matrix})
+  end
+
   def from(%{stairs: matrix}) do
     participants = Map.keys(matrix)
     print_row(0, participants, [], matrix, "")

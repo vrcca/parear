@@ -7,7 +7,6 @@ defmodule TextClient.Menu do
         "/remove \"name\"",
         "/pair \"name\" \"another name\"",
         "/unpair \"name\" \"another name\"",
-        "/unpair \"name\" \"another name\"",
         "/reset_all_counters CONFIRM_RESET",
         "/quit"
       ]

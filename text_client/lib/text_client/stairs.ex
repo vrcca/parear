@@ -1,5 +1,5 @@
 defmodule TextClient.Stairs do
-  alias TextClient.StairsView
+  alias TextClient.Printer
 
   def accept_option(stairs, args) do
     String.split(args)
@@ -68,7 +68,7 @@ defmodule TextClient.Stairs do
       "",
       "#{title}\n",
       "Current stairs:",
-      StairsView.from(matrix),
+      Printer.from(matrix),
       ""
     ]
     |> Enum.join("\n")
