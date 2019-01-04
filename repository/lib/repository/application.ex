@@ -3,7 +3,8 @@ defmodule Repository.Application do
 
   def start(_type, _args) do
     children = [
-      Repository.Stairs
+      Repository.Stairs,
+      Repository.Parear.Repo
     ]
 
     opts = [
