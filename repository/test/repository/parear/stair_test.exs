@@ -23,13 +23,13 @@ defmodule Repository.Parear.StairTest do
   end
 
   test "Saves name and limit from Parear.Stairs", %{pair_stairs: stairs} do
-    assert [] == Stair.all()
+    assert [] == Repository.Parear.Repo.all(Stair)
 
     {:ok, _stairs} = Stair.save_all_from(stairs)
 
-    [first | _rest] = Stair.all()
-    assert stairs.name == first.name
-    assert stairs.limit == first.limit
+    saved_stair = Stair.find_by_id(stairs.id)
+    assert stairs.name == saved_stair.name
+    assert stairs.limit == saved_stair.limit
   end
 
   test "Saves participants from Parear.Stairs", %{pair_stairs: stairs} do
