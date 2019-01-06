@@ -1,8 +1,7 @@
 defmodule Repository.Parear.Participant do
-  use Ecto.Schema
   import Ecto.Changeset
-
   alias Repository.Parear.{Stair, Participant}
+  use Repository.Parear.Schema
 
   schema "participants" do
     field(:name, :string)

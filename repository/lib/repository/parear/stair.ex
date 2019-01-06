@@ -1,7 +1,7 @@
 defmodule Repository.Parear.Stair do
-  use Ecto.Schema
-  import Ecto.Changeset
   alias Repository.Parear.{Repo, Participant, PairStatus, Stair}
+  use Repository.Parear.Schema
+  import Ecto.Changeset
 
   schema "stairs" do
     field(:name, :string)
@@ -13,12 +13,12 @@ defmodule Repository.Parear.Stair do
 
   def changeset(stair, params \\ %{}) do
     stair
-    |> cast(params, [:name, :limit])
+    |> cast(params, [:id, :name, :limit])
     |> validate_required([:name])
   end
 
   def all() do
-    __MODULE__
+    Stair
     |> Repo.all()
   end
 

@@ -30,4 +30,8 @@ defmodule Repository.Parear.StairTest do
     assert nil != first.id
     assert "Vitor" == first.name
   end
+
+  @tag :pending
+  test "Saves pair status from Parear.Stairs" do
+  end
 end
