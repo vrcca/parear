@@ -21,11 +21,6 @@ defmodule Repository.Parear.Stair do
     Repo.get(Stair, id)
   end
 
-  def all() do
-    Stair
-    |> Repo.all()
-  end
-
   def save_all_from(stairs = %Parear.Stairs{id: id}) do
     case find_by_id(id) do
       nil -> %Stair{}
