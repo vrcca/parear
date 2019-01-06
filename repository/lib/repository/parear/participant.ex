@@ -4,7 +4,8 @@ defmodule Repository.Parear.Participant do
   alias Repository.Parear.Stair
 
   schema "participants" do
-    field :name
-    has_one :stair, Stair
+    field(:name, :string)
+    belongs_to(:stair, Stair)
+    timestamps()
   end
 end
