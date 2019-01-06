@@ -4,23 +4,36 @@ defmodule Repository.Parear.StairTest do
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
+    %{pair_stairs: Parear.Stairs.new("Whiskey", limit: 10)}
   end
 
-  test "Saves name and limit from Parear.Stairs" do
+  test "Inserts stair with same id from Parear.Stairs", %{pair_stairs: stairs} do
+    {:ok, inserted_stairs} = Stair.save_all_from(stairs)
+    assert stairs.id == Map.get(inserted_stairs, :id)
+  end
+
+  test "Updates stair with new name", %{pair_stairs: stairs} do
+    {:ok, _} = Stair.save_all_from(stairs)
+
+    stairs_with_new_name = %{stairs | name: "New Whiskey"}
+    {:ok, _} = Stair.save_all_from(stairs_with_new_name)
+
+    stairs = Stair.find_by_id(stairs.id)
+    assert "New Whiskey" == stairs.name
+  end
+
+  test "Saves name and limit from Parear.Stairs", %{pair_stairs: stairs} do
     assert [] == Stair.all()
 
-    {:ok, _stairs} = Stair.save_all_from(Parear.Stairs.new("Whiskey", limit: 10))
+    {:ok, _stairs} = Stair.save_all_from(stairs)
 
     [first | _rest] = Stair.all()
-    assert "Whiskey" == first.name
-    assert 10 == first.limit
+    assert stairs.name == first.name
+    assert stairs.limit == first.limit
   end
 
-  test "Saves participants from Parear.Stairs" do
-    updated_stairs =
-      with pair_stairs <- Parear.Stairs.new("Whiskey with participants", limit: 10) do
-        Parear.Stairs.add_participant(pair_stairs, "Vitor")
-      end
+  test "Saves participants from Parear.Stairs", %{pair_stairs: stairs} do
+    updated_stairs = Parear.Stairs.add_participant(stairs, "Vitor")
 
     {:ok, created_stairs} = Stair.save_all_from(updated_stairs)
     stair_with_participants = Stair.load_participants(created_stairs)
