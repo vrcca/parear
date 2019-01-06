@@ -14,8 +14,7 @@ defmodule Repository.MixProject do
   def application do
     [
       mod: {Repository.Application, []},
-      extra_applications: [:logger],
-      included_applications: [:parear]
+      extra_applications: [:logger, :parear, :ecto_sql, :postgrex]
     ]
   end
 
