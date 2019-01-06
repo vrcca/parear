@@ -17,17 +17,23 @@ defmodule Repository.Parear.Stair do
     |> validate_required([:name])
   end
 
+  def find_by_id(id) do
+    Repo.get(Stair, id)
+  end
+
   def all() do
     Stair
     |> Repo.all()
   end
 
-  def save_all_from(stairs = %Parear.Stairs{}) do
-    participants = Participant.convert_all_from(stairs)
-    stair = changeset(%Stair{}, Map.from_struct(stairs))
-
-    put_assoc(stair, :participants, participants)
-    |> Repo.insert()
+  def save_all_from(stairs = %Parear.Stairs{id: id}) do
+    case find_by_id(id) do
+      nil -> %Stair{}
+      stair -> stair |> load_participants()
+    end
+    |> changeset(Map.from_struct(stairs))
+    |> put_assoc(:participants, Participant.convert_all_from(stairs))
+    |> Repo.insert_or_update()
   end
 
   def load_participants(stairs = %Stair{}) do
