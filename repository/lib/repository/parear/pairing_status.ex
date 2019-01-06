@@ -1,12 +1,13 @@
 defmodule Repository.Parear.PairStatus do
-  use Ecto.Schema
   alias Repository.Parear.{Stair, Participant}
+  use Repository.Parear.Schema
 
+  @primary_key false
   schema "pair_statuses" do
     field(:total, :integer, default: 0)
-    belongs_to(:stair, Stair)
-    belongs_to(:participant, Participant)
-    belongs_to(:friend, Participant)
+    belongs_to(:stair, Stair, primary_key: true)
+    belongs_to(:participant, Participant, primary_key: true)
+    belongs_to(:friend, Participant, primary_key: true)
     timestamps()
   end
 end

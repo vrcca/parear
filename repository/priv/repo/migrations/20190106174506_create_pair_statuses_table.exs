@@ -2,14 +2,12 @@ defmodule Repository.Parear.Repo.Migrations.CreatePairStatusesTable do
   use Ecto.Migration
 
   def change do
-    create table(:pair_statuses) do
-      add :participant_id, references(:participants)
-      add :friend_id, references(:participants)
-      add :stair_id, references(:stairs)
+    create table(:pair_statuses, primary_key: false) do
+      add :participant_id, references(:participants, type: :binary_id), primary_key: true
+      add :friend_id, references(:participants, type: :binary_id), primary_key: true
+      add :stair_id, references(:stairs, type: :binary_id), primary_key: true
       add :total, :integer, default: 0
       timestamps()
     end
-
-    create unique_index(:pair_statuses, [:stair_id, :participant_id, :friend_id])
   end
 end
