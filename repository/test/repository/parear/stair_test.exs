@@ -1,5 +1,5 @@
 defmodule Repository.Parear.StairTest do
-  alias Repository.Parear.{Stair, Repo}
+  alias Repository.Parear.{Stair, Participant, Repo}
   use ExUnit.Case, async: true
 
   setup do
@@ -44,7 +44,55 @@ defmodule Repository.Parear.StairTest do
     assert "Vitor" == first.name
   end
 
-  @tag :pending
-  test "Saves pair status from Parear.Stairs" do
+  test "Deletes removed participant from stair", %{pair_stairs: stairs} do
+    updated_stairs =
+      stairs
+      |> Parear.Stairs.add_participant("Vitor")
+      |> Parear.Stairs.add_participant("Kenya")
+
+    {:ok, _} = Stair.save_all_from(updated_stairs)
+
+    {:ok, saved_stairs} =
+      updated_stairs
+      |> Parear.Stairs.remove_participant("Vitor")
+      |> Stair.save_all_from()
+
+    stair_with_participants = Stair.load_participants(saved_stairs)
+    assert stair_with_participants |> has_participant_named?("Kenya")
+    assert false == stair_with_participants |> has_participant_named?("Vitor")
   end
+
+  @tag :pending
+  test "Saves pair status from Parear.Stairs", %{pair_stairs: stairs} do
+    id = stairs.id
+
+    {:ok, stairs_with_status} =
+      stairs
+      |> Parear.Stairs.add_participant("Vitor")
+      |> Parear.Stairs.add_participant("Kenya")
+      |> Parear.Stairs.pair("Vitor", "Kenya")
+
+    {:ok, _} = Stair.save_all_from(stairs_with_status)
+
+    pair_statuses =
+      Stair.find_by_id(id)
+      |> Stair.load_pair_statuses()
+      |> Map.get(:pair_statuses)
+
+    assert false == Enum.empty?(pair_statuses)
+  end
+
+  defp has_participant_named?(stair = %Stair{}, name) do
+    Map.get(stair, :participants)
+    |> has_participant_named?(name)
+  end
+
+  defp has_participant_named?(participants, name) do
+    Enum.any?(participants, fn p ->
+      get_name(p) == name
+    end)
+  end
+
+  defp get_name(p = %Participant{}), do: Map.get(p, :name)
+  defp get_name(p), do: Ecto.Changeset.get_field(p, :name)
 end
