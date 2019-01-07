@@ -10,4 +10,8 @@ defmodule Repository.Parear.PairStatus do
     belongs_to(:friend, Participant, primary_key: true)
     timestamps()
   end
+
+  def convert_all_from(stairs = %Parear.Stairs{}) do
+    []
+  end
 end

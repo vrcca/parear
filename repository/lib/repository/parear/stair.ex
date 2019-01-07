@@ -6,7 +6,7 @@ defmodule Repository.Parear.Stair do
   schema "stairs" do
     field(:name, :string)
     field(:limit, :integer, default: 5)
-    has_many(:participants, Participant)
+    has_many(:participants, Participant, on_replace: :nilify)
     has_many(:pair_statuses, PairStatus)
     timestamps()
   end
@@ -24,7 +24,7 @@ defmodule Repository.Parear.Stair do
   def save_all_from(stairs = %Parear.Stairs{id: id}) do
     case find_by_id(id) do
       nil -> %Stair{}
-      stair -> stair |> load_participants()
+      stair -> stair |> load_participants() |> load_pair_statuses()
     end
     |> changeset(Map.from_struct(stairs))
     |> put_assoc(:participants, Participant.convert_all_from(stairs))
@@ -34,5 +34,10 @@ defmodule Repository.Parear.Stair do
   def load_participants(stairs = %Stair{}) do
     stairs
     |> Repo.preload(:participants)
+  end
+
+  def load_pair_statuses(stairs = %Stair{}) do
+    stairs
+    |> Repo.preload(:pair_statuses)
   end
 end
