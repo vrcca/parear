@@ -71,10 +71,16 @@ defmodule Parear.Stairs do
     status
   end
 
-  def remove_participant(stairs, name) do
+  def remove_participant(stairs = %Stairs{}, participant = %Participant{}) do
     stairs
-    |> remove(name)
-    |> remove_from_each_participant(name)
+    |> remove(participant)
+    |> remove_from_each_participant(:participants, participant.name)
+    |> remove_from_each_participant(:statuses, participant.id)
+  end
+
+  def remove_participant(stairs = %Stairs{}, name) do
+    participant = find_participant_by_name(stairs, name)
+    remove_participant(stairs, participant)
   end
 
   def pair(stairs, name, another_name) do
@@ -170,15 +176,17 @@ defmodule Parear.Stairs do
     |> update_in([:participants, another_participant, participant], fn _ -> updated_value end)
   end
 
-  defp remove(stairs, name) do
+  defp remove(stairs, participant = %Participant{name: name}) do
     update_in(stairs, [:participants], &Map.drop(&1, [name]))
+    |> update_in([:all_participants], &List.delete(&1, participant))
   end
 
-  defp remove_from_each_participant(stairs = %Stairs{participants: participants}, name) do
-    participants
-    |> Enum.reduce(stairs, fn {participant, _friends}, current_stairs ->
-      update_in(current_stairs, [:participants, participant], fn friends ->
-        Map.drop(friends, [name])
+  defp remove_from_each_participant(stairs, property, id) do
+    stairs
+    |> Map.get(property)
+    |> Enum.reduce(stairs, fn {name, _friends}, current_stairs ->
+      update_in(current_stairs, [property, name], fn friends ->
+        Map.drop(friends, [id])
       end)
     end)
   end
