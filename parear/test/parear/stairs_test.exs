@@ -106,16 +106,19 @@ defmodule Parear.StairsTest do
     assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
-  test "Should allow removing a participant" do
-    participants =
-      stairs_with_two_participants()
+  test "Should allow removing a participant", %{simple_stairs: stairs} do
+    stairs =
+      stairs
       |> Stairs.add_participant("Elvis")
       |> Stairs.remove_participant("Vitor")
-      |> get_participants()
 
-    assert Map.has_key?(participants, "Vitor") == false
-    assert Map.get(participants, "Kenya") == %{"Elvis" => 0}
-    assert Map.get(participants, "Elvis") == %{"Kenya" => 0}
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+
+    assert nil == vitor
+    assert %{elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
+    assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
   test "Should limit maximum of pairing between participants" do
@@ -154,8 +157,4 @@ defmodule Parear.StairsTest do
     |> Stairs.add_participant("Vitor")
     |> Stairs.add_participant("Kenya")
   end
-
-  defp get_participants({:ok, stairs}), do: Map.get(stairs, :participants)
-  defp get_participants(error = {:error, _msg}), do: error
-  defp get_participants(stairs), do: get_participants({:ok, stairs})
 end
