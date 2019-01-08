@@ -3,74 +3,107 @@ defmodule Parear.StairsTest do
   doctest Parear.Stairs
   alias Parear.Stairs
 
+  setup do
+    %{simple_stairs: stairs_with_two_participants()}
+  end
+
   test "Creates a new stairs with id and name" do
     stairs = Stairs.new("Whiskey")
     assert stairs.name == "Whiskey"
     assert stairs.id != nil
   end
 
-  test "Adds participant with no matching pair" do
+  test "Adds participant with id and name" do
+    participant =
+      Stairs.new("Another")
+      |> Stairs.add_participant("Vitor")
+      |> Stairs.find_participant_by_name("Vitor")
+
+    assert nil != participant
+    assert nil != participant.id
+    assert "Vitor" == participant.name
+  end
+
+  test "Adding only one participant has no pair status" do
     stairs =
       Stairs.new("Another")
       |> Stairs.add_participant("Vitor")
 
-    assert Enum.empty?(stairs.participants) == false
-    assert Map.get(stairs.participants, "Vitor") == %{}
+    participant = Stairs.find_participant_by_name(stairs, "Vitor")
+
+    statuses =
+      stairs
+      |> Stairs.statuses_for_participant(participant)
+
+    assert %{} == statuses
   end
 
-  test "Adding a second participant automatically matches with everybody else" do
-    stairs = stairs_with_two_participants()
-    assert Enum.count(stairs.participants) == 2
-    assert Map.get(stairs.participants, "Vitor") == %{"Kenya" => 0}
-    assert Map.get(stairs.participants, "Kenya") == %{"Vitor" => 0}
+  test "Adding a second participant automatically matches with everybody else", %{
+    simple_stairs: stairs
+  } do
+    assert Enum.count(stairs.all_participants) == 2
+
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+
+    assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
-  test "Pairing two participants automatically updates their pair count" do
-    participants =
-      stairs_with_two_participants()
+  test "Pairing two participants automatically updates their pair count", %{simple_stairs: stairs} do
+    {:ok, stairs} =
+      stairs
       |> Stairs.add_participant("Elvis")
       |> Stairs.pair("Vitor", "Kenya")
-      |> get_participants()
 
-    assert Map.get(participants, "Vitor") == %{"Kenya" => 1, "Elvis" => 0}
-    assert Map.get(participants, "Kenya") == %{"Vitor" => 1, "Elvis" => 0}
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+
+    assert %{kenya.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
+    assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
-  test "Undo pairing two participants automatically undos their pair count" do
-    stairs = stairs_with_two_participants() |> Stairs.add_participant("Elvis")
+  test "Undo pairing two participants automatically undos their pair count", %{
+    simple_stairs: stairs
+  } do
+    stairs = stairs |> Stairs.add_participant("Elvis")
 
-    participants =
-      with {:ok, paired_stairs} <- stairs |> Stairs.pair("Vitor", "Kenya"),
-           {:ok, unpaired_stairs} <- paired_stairs |> Stairs.unpair("Vitor", "Kenya") do
-        unpaired_stairs |> get_participants()
+    stairs =
+      with {:ok, paired_stairs} <- Stairs.pair(stairs, "Vitor", "Kenya"),
+           {:ok, unpaired_stairs} <- Stairs.unpair(paired_stairs, "Vitor", "Kenya") do
+        unpaired_stairs
       end
 
-    assert Map.get(participants, "Vitor") == %{"Kenya" => 0, "Elvis" => 0}
-    assert Map.get(participants, "Kenya") == %{"Vitor" => 0, "Elvis" => 0}
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+
+    assert %{kenya.id => 0, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 0, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
+    assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
-  test "Should not allow to unpair if they never paired" do
-    participants =
-      stairs_with_two_participants()
-      |> Stairs.unpair("Vitor", "Kenya")
-      |> get_participants()
+  test "Should do nothing when unpairing when they never paired", %{simple_stairs: stairs} do
+    {:ok, stairs} = Stairs.unpair(stairs, "Vitor", "Kenya")
 
-    assert Map.get(participants, "Vitor") == %{"Kenya" => 0}
-    assert Map.get(participants, "Kenya") == %{"Vitor" => 0}
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
-  test "Should be able to reset stairs" do
-    {:ok, stairs} =
-      stairs_with_two_participants()
-      |> Stairs.pair("Vitor", "Kenya")
+  test "Should be able to reset stairs", %{simple_stairs: stairs} do
+    stairs =
+      with {:ok, paired_stairs} = Stairs.pair(stairs, "Vitor", "Kenya") do
+        Stairs.reset_all_counters(paired_stairs)
+      end
 
-    participants =
-      stairs
-      |> Stairs.reset_all_counters()
-      |> get_participants()
-
-    assert Map.get(participants, "Vitor") == %{"Kenya" => 0}
-    assert Map.get(participants, "Kenya") == %{"Vitor" => 0}
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
   test "Should allow removing a participant" do
