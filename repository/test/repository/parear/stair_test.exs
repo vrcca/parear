@@ -8,15 +8,15 @@ defmodule Repository.Parear.StairTest do
   end
 
   test "Inserts stair with same id from Parear.Stairs", %{pair_stairs: stairs} do
-    {:ok, inserted_stairs} = Stair.save_all_from(stairs)
+    {:ok, inserted_stairs} = Stair.save_cascade(stairs)
     assert stairs.id == Map.get(inserted_stairs, :id)
   end
 
   test "Updates stair with new name", %{pair_stairs: stairs} do
-    {:ok, _} = Stair.save_all_from(stairs)
+    {:ok, _} = Stair.save_cascade(stairs)
 
     stairs_with_new_name = %{stairs | name: "New Whiskey"}
-    {:ok, _} = Stair.save_all_from(stairs_with_new_name)
+    {:ok, _} = Stair.save_cascade(stairs_with_new_name)
 
     stairs = Stair.find_by_id(stairs.id)
     assert "New Whiskey" == stairs.name
@@ -25,7 +25,7 @@ defmodule Repository.Parear.StairTest do
   test "Saves name and limit from Parear.Stairs", %{pair_stairs: stairs} do
     assert [] == Repository.Parear.Repo.all(Stair)
 
-    {:ok, _stairs} = Stair.save_all_from(stairs)
+    {:ok, _stairs} = Stair.save_cascade(stairs)
 
     saved_stair = Stair.find_by_id(stairs.id)
     assert stairs.name == saved_stair.name
@@ -35,7 +35,7 @@ defmodule Repository.Parear.StairTest do
   test "Saves participants from Parear.Stairs", %{pair_stairs: stairs} do
     updated_stairs = Parear.Stairs.add_participant(stairs, "Vitor")
 
-    {:ok, created_stairs} = Stair.save_all_from(updated_stairs)
+    {:ok, created_stairs} = Stair.save_cascade(updated_stairs)
     stair_with_participants = Stair.load_participants(created_stairs)
 
     assert [] != stair_with_participants.participants
@@ -50,12 +50,12 @@ defmodule Repository.Parear.StairTest do
       |> Parear.Stairs.add_participant("Vitor")
       |> Parear.Stairs.add_participant("Kenya")
 
-    {:ok, _} = Stair.save_all_from(updated_stairs)
+    {:ok, _} = Stair.save_cascade(updated_stairs)
 
     {:ok, saved_stairs} =
       updated_stairs
       |> Parear.Stairs.remove_participant("Vitor")
-      |> Stair.save_all_from()
+      |> Stair.save_cascade()
 
     stair_with_participants = Stair.load_participants(saved_stairs)
     assert stair_with_participants |> has_participant_named?("Kenya")
@@ -72,7 +72,7 @@ defmodule Repository.Parear.StairTest do
       |> Parear.Stairs.add_participant("Kenya")
       |> Parear.Stairs.pair("Vitor", "Kenya")
 
-    {:ok, _} = Stair.save_all_from(stairs_with_status)
+    {:ok, _} = Stair.save_cascade(stairs_with_status)
 
     pair_statuses =
       Stair.find_by_id(id)

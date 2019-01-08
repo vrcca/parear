@@ -29,7 +29,7 @@ defmodule Repository.Parear.ParticipantTest do
   test "Converts to list of previously saved participants", %{
     pair_stairs: stairs_with_participants
   } do
-    {:ok, saved_stair} = Stair.save_all_from(stairs_with_participants)
+    {:ok, saved_stair} = Stair.save_cascade(stairs_with_participants)
     participants = Participant.convert_all_from(stairs_with_participants)
 
     assert 2 == length(participants)

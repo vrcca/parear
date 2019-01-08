@@ -1,5 +1,11 @@
 defmodule Parear.Validations do
-  alias Parear.Stairs
+  alias Parear.{Stairs, Participant}
+
+  def prepare_with(stairs, participant = %Participant{}, another_participant = %Participant{}) do
+    fn type ->
+      validate(stairs, participant, another_participant, type)
+    end
+  end
 
   def prepare_with(stairs, name, another_name) do
     fn type ->
@@ -13,16 +19,16 @@ defmodule Parear.Validations do
     do: validate(stairs, name, another_name, type)
 
   def validate(
-        stairs = %Stairs{participants: participants},
-        name,
-        another_name,
+        stairs = %Stairs{all_participants: participants},
+        participant,
+        another_participant,
         :participants_exist
       ) do
     cond do
-      not Map.has_key?(participants, name) ->
+      not Enum.member?(participants, participant) ->
         {:error, "unknown_participant"}
 
-      not Map.has_key?(participants, another_name) ->
+      not Enum.member?(participants, another_participant) ->
         {:error, "unknown_participant"}
 
       true ->
@@ -30,8 +36,14 @@ defmodule Parear.Validations do
     end
   end
 
-  def validate(stairs = %Stairs{limit: limit}, name, another_name, :pair_limit) do
-    current_total = stairs.participants[name][another_name]
+  def validate(
+        stairs = %Stairs{limit: limit},
+        participant = %Participant{},
+        %Participant{id: another_id},
+        :pair_limit
+      ) do
+    statuses = Stairs.statuses_for_participant(stairs, participant)
+    current_total = Map.get(statuses, another_id)
 
     cond do
       current_total == limit ->

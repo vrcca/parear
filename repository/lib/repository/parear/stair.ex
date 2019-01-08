@@ -7,7 +7,7 @@ defmodule Repository.Parear.Stair do
     field(:name, :string)
     field(:limit, :integer, default: 5)
     has_many(:participants, Participant, on_replace: :nilify)
-    has_many(:pair_statuses, PairStatus)
+    has_many(:pair_statuses, PairStatus, on_replace: :delete)
     timestamps()
   end
 
@@ -21,13 +21,14 @@ defmodule Repository.Parear.Stair do
     Repo.get(Stair, id)
   end
 
-  def save_all_from(stairs = %Parear.Stairs{id: id}) do
+  def save_cascade(stairs = %Parear.Stairs{id: id}) do
     case find_by_id(id) do
       nil -> %Stair{}
       stair -> stair |> load_participants() |> load_pair_statuses()
     end
     |> changeset(Map.from_struct(stairs))
     |> put_assoc(:participants, Participant.convert_all_from(stairs))
+    |> put_assoc(:pair_statuses, PairStatus.convert_all_from(stairs))
     |> Repo.insert_or_update()
   end
 
