@@ -11,13 +11,13 @@ defmodule Parear.ServerTest do
     {:ok, stairs} = Parear.list(server)
     assert stairs.name == "Whiskey"
     assert stairs.limit == 10
-    assert Enum.empty?(stairs.participants)
+    assert Enum.empty?(stairs.all_participants)
     assert not (stairs.id == "")
   end
 
   test "Adds participants", %{server: server} do
-    {:ok, %{stairs: participants}} = Parear.add_participant(server, "Vitor")
-    assert participants == %{"Vitor" => %{}}
+    {:ok, %{stairs: stairs}} = Parear.add_participant(server, "Vitor")
+    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
   end
 
   test "Reloads from repository", %{server: server} do
