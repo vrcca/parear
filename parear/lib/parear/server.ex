@@ -80,13 +80,8 @@ defmodule Parear.Server do
   end
 
   defp convert_using_participants(statuses, participants) do
-    participants_map =
-      Enum.reduce(participants, %{}, fn participant, acc ->
-        Map.put(acc, participant.id, participant)
-      end)
-
     find = fn id ->
-      Map.get(participants_map, id)
+      Map.get(participants, id)
     end
 
     statuses
@@ -96,7 +91,7 @@ defmodule Parear.Server do
           friends_acc |> Map.put(find.(friend_id), total)
         end)
 
-      acc |> Map.put(find.(id), converted_friends)
+      Map.put(acc, find.(id), converted_friends)
     end)
   end
 end

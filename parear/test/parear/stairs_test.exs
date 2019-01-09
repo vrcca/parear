@@ -136,9 +136,9 @@ defmodule Parear.StairsTest do
     assert msg == "maximum_limit_reached"
   end
 
-  test "Should result error when pairing unknown participants" do
+  test "Should result error when pairing unknown participants", %{simple_stairs: stairs} do
     {:error, msg} =
-      stairs_with_two_participants()
+      stairs
       |> Stairs.pair("Notregistered", "Kenya")
 
     assert msg == "unknown_participant"

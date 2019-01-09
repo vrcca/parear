@@ -25,10 +25,13 @@ defmodule Parear.Validations do
         :participants_exist
       ) do
     cond do
-      not Enum.member?(participants, participant) ->
+      nil == participant || nil == another_participant ->
         {:error, "unknown_participant"}
 
-      not Enum.member?(participants, another_participant) ->
+      not Map.has_key?(participants, participant.id) ->
+        {:error, "unknown_participant"}
+
+      not Map.has_key?(participants, another_participant.id) ->
         {:error, "unknown_participant"}
 
       true ->
