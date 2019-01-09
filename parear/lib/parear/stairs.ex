@@ -5,8 +5,7 @@ defmodule Parear.Stairs do
             name: nil,
             limit: :infinity,
             all_participants: [],
-            statuses: %{},
-            participants: []
+            statuses: %{}
 
   def new(name, opts \\ []) do
     limit = Keyword.get(opts, :limit, :infinity)
@@ -15,20 +14,15 @@ defmodule Parear.Stairs do
       id: UUID.uuid4(),
       name: name,
       limit: limit,
-      participants: %{},
       statuses: %{},
       all_participants: []
     }
   end
 
-  def add_participant(
-        stairs = %Stairs{participants: participants, statuses: statuses},
-        new_participant = %Participant{}
-      ) do
+  def add_participant(stairs = %Stairs{statuses: statuses}, new_participant = %Participant{}) do
     Map.update(stairs, :all_participants, [], fn participants ->
       [new_participant | participants]
     end)
-    |> Map.put(:participants, matching_new_pairs(participants, new_participant.name))
     |> Map.put(:statuses, matching_new_pairs(statuses, new_participant.id))
   end
 
@@ -74,7 +68,6 @@ defmodule Parear.Stairs do
   def remove_participant(stairs = %Stairs{}, participant = %Participant{}) do
     stairs
     |> remove(participant)
-    |> remove_from_each_participant(:participants, participant.name)
     |> remove_from_each_participant(:statuses, participant.id)
   end
 
@@ -83,7 +76,7 @@ defmodule Parear.Stairs do
     remove_participant(stairs, participant)
   end
 
-  def pair(stairs, name, another_name) do
+  def pair(stairs = %Stairs{}, name, another_name) do
     participant = find_participant_by_name(stairs, name)
     another_participant = find_participant_by_name(stairs, another_name)
     validation = Validations.prepare_with(stairs, participant, another_participant)
@@ -92,14 +85,13 @@ defmodule Parear.Stairs do
          {:ok, _} <- validation.(:pair_limit) do
       updated_stairs =
         stairs
-        |> update_pair_count(name, another_name, &(&1 + 1))
         |> update_pair_count(participant, another_participant, &(&1 + 1))
 
       {:ok, updated_stairs}
     end
   end
 
-  def unpair(stairs, name, another_name) do
+  def unpair(stairs = %Stairs{}, name, another_name) do
     participant = find_participant_by_name(stairs, name)
     another_participant = find_participant_by_name(stairs, another_name)
     validation = Validations.prepare_with(stairs, participant, another_participant)
@@ -107,7 +99,6 @@ defmodule Parear.Stairs do
     with {:ok, _} <- validation.(:participants_exist) do
       updated_stairs =
         stairs
-        |> update_pair_count(name, another_name, &max(&1 - 1, 0))
         |> update_pair_count(participant, another_participant, &max(&1 - 1, 0))
 
       {:ok, updated_stairs}
@@ -116,7 +107,7 @@ defmodule Parear.Stairs do
 
   def reset_all_counters(stairs = %Stairs{statuses: statuses}) do
     empty_stairs =
-      update_in(stairs, [:participants], fn _ -> %{} end)
+      stairs
       |> update_in([:statuses], fn _ -> %{} end)
 
     statuses
@@ -137,7 +128,8 @@ defmodule Parear.Stairs do
   end
 
   defp add_new_participant_to_all(ids, participants, new_participant) do
-    Enum.reduce(ids, participants, fn participant, state ->
+    ids
+    |> Enum.reduce(participants, fn participant, state ->
       Map.update(state, participant, %{}, &Map.put(&1, new_participant, 0))
     end)
   end
@@ -168,17 +160,8 @@ defmodule Parear.Stairs do
     |> update_in([:statuses, another_id, id], fn _ -> updated_value end)
   end
 
-  defp update_pair_count(stairs, participant, another_participant, fun) do
-    updated_value = fun.(stairs.participants[participant][another_participant])
-
-    stairs
-    |> update_in([:participants, participant, another_participant], fn _ -> updated_value end)
-    |> update_in([:participants, another_participant, participant], fn _ -> updated_value end)
-  end
-
-  defp remove(stairs, participant = %Participant{name: name}) do
-    update_in(stairs, [:participants], &Map.drop(&1, [name]))
-    |> update_in([:all_participants], &List.delete(&1, participant))
+  defp remove(stairs, participant) do
+    update_in(stairs, [:all_participants], &List.delete(&1, participant))
   end
 
   defp remove_from_each_participant(stairs, property, id) do

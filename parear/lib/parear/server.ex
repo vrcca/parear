@@ -70,7 +70,33 @@ defmodule Parear.Server do
   end
 
   defp reply_ok(updated_stairs) do
-    %{participants: participants} = updated_stairs
-    {:reply, {:ok, %{stairs: participants}}, updated_stairs}
+    %{statuses: statuses} = updated_stairs
+
+    statuses =
+      statuses
+      |> convert_using_participants(updated_stairs.all_participants)
+
+    {:reply, {:ok, %{stairs: statuses}}, updated_stairs}
+  end
+
+  defp convert_using_participants(statuses, participants) do
+    participants_map =
+      Enum.reduce(participants, %{}, fn participant, acc ->
+        Map.put(acc, participant.id, participant)
+      end)
+
+    find = fn id ->
+      Map.get(participants_map, id)
+    end
+
+    statuses
+    |> Enum.reduce(%{}, fn {id, friends}, acc ->
+      converted_friends =
+        Enum.reduce(friends, %{}, fn {friend_id, total}, friends_acc ->
+          friends_acc |> Map.put(find.(friend_id), total)
+        end)
+
+      acc |> Map.put(find.(id), converted_friends)
+    end)
   end
 end
