@@ -74,7 +74,7 @@ defmodule Parear.Server do
 
     statuses =
       statuses
-      |> convert_using_participants(updated_stairs.all_participants)
+      |> convert_using_participants(updated_stairs.participants)
 
     {:reply, {:ok, %{stairs: statuses}}, updated_stairs}
   end

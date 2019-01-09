@@ -11,26 +11,26 @@ defmodule Repository.Parear.Participant do
 
   def changeset(participant, params \\ %{}) do
     participant
-    |> cast(params, [:name])
-    |> validate_required([:name])
+    |> cast(params, [:id, :name])
+    |> validate_required([:id, :name])
   end
 
-  def convert_all_from(%Parear.Stairs{id: id, participants: participants}) do
+  def convert_all_from(%Parear.Stairs{participants: participants}) do
     participants
-    |> Enum.map(fn {name, _matches} ->
-      retrieve_or_create(id, name)
-      |> changeset(%{name: name})
+    |> Enum.map(fn {id, participant} ->
+      retrieve_or_create(id)
+      |> changeset(Map.from_struct(participant))
     end)
   end
 
-  defp retrieve_or_create(id, name) do
-    case find_by_stair_id_and_name(id, name) do
-      nil -> %Participant{name: name}
+  defp retrieve_or_create(id) do
+    case find_by_id(id) do
+      nil -> %Participant{}
       p -> p
     end
   end
 
-  defp find_by_stair_id_and_name(stair_id, name) do
-    Repo.get_by(Participant, %{stair_id: stair_id, name: name})
+  defp find_by_id(id) do
+    Repo.get_by(Participant, %{id: id})
   end
 end

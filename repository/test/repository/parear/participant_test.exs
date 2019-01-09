@@ -21,9 +21,9 @@ defmodule Repository.Parear.ParticipantTest do
 
     assert 2 == length(participants)
     assert participants |> has_participant_named?("Vitor")
-    assert false == participants |> has_id?("Vitor")
+    assert true == participants |> has_id?("Vitor")
     assert participants |> has_participant_named?("Kenya")
-    assert false == participants |> has_id?("Kenya")
+    assert true == participants |> has_id?("Kenya")
   end
 
   test "Converts to list of previously saved participants", %{
