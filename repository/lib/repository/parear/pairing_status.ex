@@ -11,7 +11,7 @@ defmodule Repository.Parear.PairStatus do
     timestamps()
   end
 
-  def convert_all_from(stairs = %Parear.Stairs{id: id, participants: participants}) do
+  def convert_all_from(stairs = %Parear.Stairs{statuses: statuses}) do
     []
   end
 end

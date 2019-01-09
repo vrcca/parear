@@ -19,7 +19,7 @@ defmodule Parear.Validations do
     do: validate(stairs, name, another_name, type)
 
   def validate(
-        stairs = %Stairs{all_participants: participants},
+        stairs = %Stairs{participants: participants},
         participant,
         another_participant,
         :participants_exist

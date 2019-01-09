@@ -41,7 +41,7 @@ defmodule Parear.StairsTest do
   test "Adding a second participant automatically matches with everybody else", %{
     simple_stairs: stairs
   } do
-    assert Enum.count(stairs.all_participants) == 2
+    assert Enum.count(stairs.participants) == 2
 
     vitor = stairs |> Stairs.find_participant_by_name("Vitor")
     kenya = stairs |> Stairs.find_participant_by_name("Kenya")

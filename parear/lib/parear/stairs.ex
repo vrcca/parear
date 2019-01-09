@@ -4,7 +4,7 @@ defmodule Parear.Stairs do
   defstruct id: nil,
             name: nil,
             limit: :infinity,
-            all_participants: %{},
+            participants: %{},
             statuses: %{}
 
   def new(name, opts \\ []) do
@@ -15,7 +15,7 @@ defmodule Parear.Stairs do
       name: name,
       limit: limit,
       statuses: %{},
-      all_participants: %{}
+      participants: %{}
     }
   end
 
@@ -23,7 +23,7 @@ defmodule Parear.Stairs do
         stairs = %Stairs{statuses: statuses},
         new_participant = %Participant{id: id}
       ) do
-    Map.update(stairs, :all_participants, %{}, fn participants ->
+    Map.update(stairs, :participants, %{}, fn participants ->
       Map.put(participants, id, new_participant)
     end)
     |> Map.put(:statuses, matching_new_pairs(statuses, id))
@@ -32,7 +32,7 @@ defmodule Parear.Stairs do
   def add_participant(stairs = %Stairs{}, name),
     do: add_participant(stairs, Participant.new(name))
 
-  def find_participant_by_name(%Stairs{all_participants: participants}, name) do
+  def find_participant_by_name(%Stairs{participants: participants}, name) do
     found_participant =
       participants
       |> Enum.find(fn {_id, %Participant{name: participant_name}} ->
@@ -45,11 +45,11 @@ defmodule Parear.Stairs do
     end
   end
 
-  def find_participant_by_id(%Stairs{all_participants: participants}, id) do
+  def find_participant_by_id(%Stairs{participants: participants}, id) do
     Map.get(participants, id)
   end
 
-  def find_participant_by(%Stairs{all_participants: participants}, property, value)
+  def find_participant_by(%Stairs{participants: participants}, property, value)
       when is_atom(property) do
     participants
     |> Enum.find(fn {_id, participant} ->
@@ -163,7 +163,7 @@ defmodule Parear.Stairs do
   end
 
   defp remove(stairs, %Participant{id: id}) do
-    update_in(stairs, [:all_participants], fn participants ->
+    update_in(stairs, [:participants], fn participants ->
       Map.drop(participants, [id])
     end)
   end

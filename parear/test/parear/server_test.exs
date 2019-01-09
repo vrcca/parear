@@ -11,7 +11,7 @@ defmodule Parear.ServerTest do
     {:ok, stairs} = Parear.list(server)
     assert stairs.name == "Whiskey"
     assert stairs.limit == 10
-    assert Enum.empty?(stairs.all_participants)
+    assert Enum.empty?(stairs.participants)
     assert not (stairs.id == "")
   end
 
