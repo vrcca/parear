@@ -4,7 +4,7 @@ defmodule Parear.Stairs do
   defstruct id: nil,
             name: nil,
             limit: :infinity,
-            all_participants: [],
+            all_participants: %{},
             statuses: %{}
 
   def new(name, opts \\ []) do
@@ -15,42 +15,44 @@ defmodule Parear.Stairs do
       name: name,
       limit: limit,
       statuses: %{},
-      all_participants: []
+      all_participants: %{}
     }
   end
 
-  def add_participant(stairs = %Stairs{statuses: statuses}, new_participant = %Participant{}) do
-    Map.update(stairs, :all_participants, [], fn participants ->
-      [new_participant | participants]
+  def add_participant(
+        stairs = %Stairs{statuses: statuses},
+        new_participant = %Participant{id: id}
+      ) do
+    Map.update(stairs, :all_participants, %{}, fn participants ->
+      Map.put(participants, id, new_participant)
     end)
-    |> Map.put(:statuses, matching_new_pairs(statuses, new_participant.id))
+    |> Map.put(:statuses, matching_new_pairs(statuses, id))
   end
 
-  def add_participant(stairs = %Stairs{}, name) do
-    new_participant = Participant.new(name)
-
-    stairs
-    |> add_participant(new_participant)
-  end
+  def add_participant(stairs = %Stairs{}, name),
+    do: add_participant(stairs, Participant.new(name))
 
   def find_participant_by_name(%Stairs{all_participants: participants}, name) do
-    participants
-    |> Enum.find(fn %Participant{name: participant_name} ->
-      participant_name == name
-    end)
+    found_participant =
+      participants
+      |> Enum.find(fn {_id, %Participant{name: participant_name}} ->
+        participant_name == name
+      end)
+
+    case found_participant do
+      {_id, participant} -> participant
+      nil -> nil
+    end
   end
 
-  def find_participant_by_id(stairs = %Stairs{}, id) do
-    stairs.all_participants
-    |> Enum.find(fn participant ->
-      participant.id == id
-    end)
+  def find_participant_by_id(%Stairs{all_participants: participants}, id) do
+    Map.get(participants, id)
   end
 
   def find_participant_by(%Stairs{all_participants: participants}, property, value)
       when is_atom(property) do
     participants
-    |> Enum.find(fn participant ->
+    |> Enum.find(fn {_id, participant} ->
       Map.get(participant, property) == value
     end)
   end
@@ -160,8 +162,10 @@ defmodule Parear.Stairs do
     |> update_in([:statuses, another_id, id], fn _ -> updated_value end)
   end
 
-  defp remove(stairs, participant) do
-    update_in(stairs, [:all_participants], &List.delete(&1, participant))
+  defp remove(stairs, %Participant{id: id}) do
+    update_in(stairs, [:all_participants], fn participants ->
+      Map.drop(participants, [id])
+    end)
   end
 
   defp remove_from_each_participant(stairs, property, id) do
