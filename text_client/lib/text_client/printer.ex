@@ -1,5 +1,5 @@
 defmodule TextClient.Printer do
-  def from(%Parear.Stairs{id: id, participants: matrix}) do
+  def from(%Parear.Stairs{id: id, statuses: matrix}) do
     "Stairs of id #{id}\n" <> from(%{stairs: matrix})
   end
 

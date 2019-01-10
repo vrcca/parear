@@ -62,7 +62,6 @@ defmodule Repository.Parear.StairTest do
     assert false == stair_with_participants |> has_participant_named?("Vitor")
   end
 
-  @tag :pending
   test "Saves pair status from Parear.Stairs", %{pair_stairs: stairs} do
     id = stairs.id
 

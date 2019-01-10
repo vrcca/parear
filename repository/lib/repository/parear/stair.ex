@@ -17,28 +17,46 @@ defmodule Repository.Parear.Stair do
     |> validate_required([:name])
   end
 
+  def insert_or_update_with_participants_changeset(stairs = %Parear.Stairs{id: id}) do
+    retrieve_or_create(id)
+    |> Repo.preload(:participants)
+    |> changeset(Map.from_struct(stairs))
+    |> put_assoc(:participants, Participant.convert_all_from(stairs))
+  end
+
+  def insert_or_update_with_statuses_changeset(stairs = %Parear.Stairs{id: id}) do
+    retrieve_or_create(id)
+    |> Repo.preload(:pair_statuses)
+    |> changeset(Map.from_struct(stairs))
+    |> put_assoc(:pair_statuses, PairStatus.convert_all_from(stairs))
+  end
+
   def find_by_id(id) do
     Repo.get(Stair, id)
   end
 
-  def save_cascade(stairs = %Parear.Stairs{id: id}) do
+  def save_cascade(stairs = %Parear.Stairs{}) do
+    {:ok, result} =
+      Repo.transaction(fn ->
+        Repo.insert_or_update(Stair.insert_or_update_with_participants_changeset(stairs))
+        Repo.insert_or_update(Stair.insert_or_update_with_statuses_changeset(stairs))
+      end)
+
+    result
+  end
+
+  defp retrieve_or_create(id) do
     case find_by_id(id) do
       nil -> %Stair{}
-      stair -> stair |> load_participants() |> load_pair_statuses()
+      stair -> stair
     end
-    |> changeset(Map.from_struct(stairs))
-    |> put_assoc(:participants, Participant.convert_all_from(stairs))
-    |> put_assoc(:pair_statuses, PairStatus.convert_all_from(stairs))
-    |> Repo.insert_or_update()
   end
 
-  def load_participants(stairs = %Stair{}) do
-    stairs
-    |> Repo.preload(:participants)
+  def load_pair_statuses(stairs) do
+    stairs |> Repo.preload(:pair_statuses)
   end
 
-  def load_pair_statuses(stairs = %Stair{}) do
-    stairs
-    |> Repo.preload(:pair_statuses)
+  def load_participants(stairs) do
+    stairs |> Repo.preload(:participants)
   end
 end

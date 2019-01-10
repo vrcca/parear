@@ -36,10 +36,10 @@ defmodule Repository.Parear.ParticipantTest do
     assert participants |> has_participant_named?("Vitor")
     assert participants |> has_id?("Vitor")
 
-    assert has_same_id_in(saved_stair, participants, "Vitor")
+    assert saved_stair |> Repo.preload(:participants) |> has_same_id_in(participants, "Vitor")
     assert participants |> has_participant_named?("Kenya")
     assert participants |> has_id?("Kenya")
-    assert has_same_id_in(saved_stair, participants, "Kenya")
+    assert saved_stair |> Repo.preload(:participants) |> has_same_id_in(participants, "Kenya")
   end
 
   defp has_same_id_in(saved_stair, participants, name) do
