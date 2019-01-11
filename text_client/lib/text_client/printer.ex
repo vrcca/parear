@@ -1,5 +1,9 @@
 defmodule TextClient.Printer do
-  def from(%Parear.Stairs{id: id, statuses: matrix}) do
+  def from(%Parear.Stairs{id: id, participants: participants, statuses: matrix}) do
+    matrix =
+      matrix
+      |> convert_ids_to_participants(participants)
+
     "Stairs of id #{id}\n" <> from(%{stairs: matrix})
   end
 
@@ -25,5 +29,24 @@ defmodule TextClient.Printer do
       end)
 
     acc <> row <> "\n" <> print_row(columns + 1, rest, matches ++ [participant], matrix, acc)
+  end
+
+  defp convert_ids_to_participants(matrix, participants) do
+    matrix
+    |> Enum.reduce(%{}, fn {id, friends}, acc ->
+      matches =
+        friends
+        |> Enum.reduce(%{}, fn {friend_id, total}, acc ->
+          Map.put(acc, participants[friend_id], total)
+        end)
+
+      Map.put(acc, participants[id], matches)
+    end)
+  end
+end
+
+defimpl String.Chars, for: Parear.Participant do
+  def to_string(%Parear.Participant{name: name}) do
+    name
   end
 end

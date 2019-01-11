@@ -1,14 +1,15 @@
 defmodule Parear.Stairs do
   alias Parear.{Stairs, Participant, Validations}
 
+  @default_limit 5
   defstruct id: nil,
             name: nil,
-            limit: :infinity,
+            limit: @default_limit,
             participants: %{},
             statuses: %{}
 
   def new(name, opts \\ []) do
-    limit = Keyword.get(opts, :limit, :infinity)
+    limit = Keyword.get(opts, :limit, @default_limit)
 
     %Stairs{
       id: UUID.uuid4(),

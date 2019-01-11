@@ -1,22 +1,13 @@
 defmodule Repository.Stairs do
-  use Agent
-
-  @repo __MODULE__
-
-  def start_link(_) do
-    Agent.start_link(fn -> %{} end, name: @repo)
-  end
+  alias Repository.Parear.Stair
 
   def find_by_id(id) do
-    Agent.get(@repo, fn state ->
-      Map.get(state, id)
-    end)
+    Stair.find_by_id(id)
   end
 
-  def save(stairs = %Parear.Stairs{id: id}) do
-    Agent.update(@repo, fn state ->
-      Map.put(state, id, stairs)
-    end)
+  def save(stairs = %Parear.Stairs{}) do
+    Stair.save_cascade(stairs)
+    :ok
   end
 end
 
