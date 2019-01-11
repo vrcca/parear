@@ -1,6 +1,6 @@
 defmodule Repository.Parear.PairStatus do
   import Ecto.Changeset
-  alias Repository.Parear.{Stair, Participant, PairStatus}
+  alias Repository.Parear.{Stair, Participant, PairStatus, Repo}
   use Repository.Parear.Schema
 
   @primary_key false
@@ -12,9 +12,9 @@ defmodule Repository.Parear.PairStatus do
     timestamps()
   end
 
-  def changeset(statuses, params \\ %{}) do
+  def changeset(statuses = %PairStatus{}, params \\ %{}) do
     statuses
-    |> cast(params, [:participant_id, :friend_id, :total])
+    |> cast(params, [:total])
     |> validate_required([:participant_id, :friend_id, :total])
   end
 
@@ -22,11 +22,23 @@ defmodule Repository.Parear.PairStatus do
     Enum.reduce(statuses, [], fn {participant_id, matches}, acc ->
       friends =
         for {friend_id, total} <- matches do
-          %PairStatus{}
-          |> changeset(%{friend_id: friend_id, participant_id: participant_id, total: total})
+          retrieve_or_create(participant_id, friend_id)
+          |> changeset(%{total: total})
         end
 
       acc ++ friends
     end)
+  end
+
+  defp retrieve_or_create(id, another_id) do
+    case find_by_id_pair(id, another_id) do
+      nil -> %PairStatus{participant_id: id, friend_id: another_id}
+      ps -> ps
+    end
+  end
+
+  def find_by_id_pair(id, another_id) do
+    filter = [participant_id: id, friend_id: another_id]
+    Repo.get_by(PairStatus, filter)
   end
 end
