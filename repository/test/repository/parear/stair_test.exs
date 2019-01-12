@@ -79,6 +79,29 @@ defmodule Repository.Parear.StairTest do
     assert false == Enum.empty?(pair_statuses)
   end
 
+  test "Deletes removed pair status from Parear.Stairs", %{pair_stairs: stairs} do
+    {:ok, stairs_with_status} =
+      stairs
+      |> Parear.Stairs.add_participant("Vitor")
+      |> Parear.Stairs.add_participant("Kenya")
+      |> Parear.Stairs.pair("Vitor", "Kenya")
+      |> IO.inspect()
+
+    stairs_with_removed_participant =
+      stairs_with_status
+      |> Parear.Stairs.remove_participant("Kenya")
+      |> IO.inspect()
+
+    {:ok, _} = Stair.save_cascade(stairs_with_removed_participant)
+
+    pair_statuses =
+      Stair.find_by_id(stairs.id)
+      |> Stair.load_pair_statuses()
+      |> Map.get(:pair_statuses)
+
+    assert true == pair_statuses
+  end
+
   defp has_participant_named?(stair = %Stair{}, name) do
     Map.get(stair, :participants)
     |> has_participant_named?(name)

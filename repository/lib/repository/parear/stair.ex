@@ -35,6 +35,10 @@ defmodule Repository.Parear.Stair do
     Repo.get(Stair, id)
   end
 
+  def find_by_name(name) do
+    Repo.get_by(Stair, %{name: name})
+  end
+
   def save_cascade(stairs = %Parear.Stairs{}) do
     {:ok, result} =
       Repo.transaction(fn ->

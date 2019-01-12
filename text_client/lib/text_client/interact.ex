@@ -9,7 +9,15 @@ defmodule TextClient.Interact do
   end
 
   defp new_stairs(name) do
-    Parear.new_stairs(name)
+    Parear.reload_by_name(name)
+    |> create_if_not_found(name)
+  end
+
+  defp create_if_not_found({:error, %{reason: :stairs_could_not_be_found}}, name),
+    do: Parear.new_stairs(name)
+
+  defp create_if_not_found(stairs, _name) do
+    stairs
   end
 
   defp run(stairs) do

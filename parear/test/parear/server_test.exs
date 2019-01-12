@@ -20,11 +20,33 @@ defmodule Parear.ServerTest do
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
   end
 
-  test "Reloads from repository", %{server: server} do
+  test "Reloads from repository by id", %{server: server} do
     {:ok, stairs} = Parear.list(server)
 
     {:ok, reloaded_stairs} =
       Parear.reload(stairs.id)
+      |> Parear.list()
+
+    assert stairs == reloaded_stairs
+  end
+
+  test "Fails to start when reloading an unknown stair by id" do
+    {:error, %{reason: reason, args: args}} = Parear.reload("unknown-id")
+    assert reason == :stairs_could_not_be_found
+    assert args == %{id: "unknown-id"}
+  end
+
+  test "Fails to start when reloading an unknown stair by name" do
+    {:error, %{reason: reason, args: args}} = Parear.reload_by_name("unknown-name")
+    assert reason == :stairs_could_not_be_found
+    assert args == %{name: "unknown-name"}
+  end
+
+  test "Reloads from repository by name", %{server: server} do
+    {:ok, stairs} = Parear.list(server)
+
+    {:ok, reloaded_stairs} =
+      Parear.reload_by_name(stairs.name)
       |> Parear.list()
 
     assert stairs == reloaded_stairs

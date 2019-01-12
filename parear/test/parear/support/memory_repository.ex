@@ -9,9 +9,17 @@ defmodule Parear.Support.MemoryRepository do
     Agent.start_link(fn -> %{} end, name: @repo)
   end
 
-  def get(id) do
+  def get_by_id(id) do
     Agent.get(@repo, fn state ->
       Map.get(state, id)
+    end)
+  end
+
+  def get_by_name(name) do
+    Agent.get(@repo, fn state ->
+      Enum.find(state, fn {_id, stairs} ->
+        stairs.name == name
+      end)
     end)
   end
 
@@ -23,8 +31,13 @@ defmodule Parear.Support.MemoryRepository do
 
   defimpl Repository, for: Stairs do
     def find_by_id(%Stairs{id: id}) do
-      stairs = Parear.Support.MemoryRepository.get(id)
-      {:ok, stairs}
+      Parear.Support.MemoryRepository.get_by_id(id)
+      |> respond_to_find()
+    end
+
+    def find_by_name(%Stairs{name: name}) do
+      Parear.Support.MemoryRepository.get_by_name(name)
+      |> respond_to_find()
     end
 
     def save(stairs = %Stairs{}) do
@@ -32,5 +45,9 @@ defmodule Parear.Support.MemoryRepository do
         stairs
       end
     end
+
+    defp respond_to_find(nil), do: {:none}
+    defp respond_to_find({_id, stairs}), do: {:ok, stairs}
+    defp respond_to_find(stairs), do: {:ok, stairs}
   end
 end

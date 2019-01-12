@@ -21,13 +21,13 @@ defmodule Parear.Stairs do
   end
 
   def add_participant(
-        stairs = %Stairs{statuses: statuses},
+        stairs = %Stairs{},
         new_participant = %Participant{id: id}
       ) do
     Map.update(stairs, :participants, %{}, fn participants ->
       Map.put(participants, id, new_participant)
     end)
-    |> Map.put(:statuses, matching_new_pairs(statuses, id))
+    |> add_to_statuses(id)
   end
 
   def add_participant(stairs = %Stairs{}, name),
@@ -61,7 +61,7 @@ defmodule Parear.Stairs do
   def statuses_for_participant(%Stairs{statuses: statuses}, %Participant{id: searched}) do
     {_, status} =
       statuses
-      |> Enum.find({searched, %{}}, fn {id, _status} ->
+      |> Enum.find({:not_found, nil}, fn {id, _status} ->
         searched == id
       end)
 
@@ -72,6 +72,8 @@ defmodule Parear.Stairs do
     stairs
     |> remove(participant)
     |> remove_from_each_participant(:statuses, participant.id)
+    |> remove_participant_statuses(participant)
+    |> clean_up_single_participant_statuses()
   end
 
   def remove_participant(stairs = %Stairs{}, name) do
@@ -109,19 +111,51 @@ defmodule Parear.Stairs do
   end
 
   def reset_all_counters(stairs = %Stairs{statuses: statuses}) do
-    empty_stairs =
-      stairs
-      |> update_in([:statuses], fn _ -> %{} end)
+    %{stairs | statuses: reset_matches(statuses)}
+  end
 
-    statuses
-    |> Map.keys()
-    |> Enum.reduce(empty_stairs, fn id, current_stairs ->
-      participant = find_participant_by_id(empty_stairs, id)
-      add_participant(current_stairs, participant)
+  defp reset_matches(statuses) do
+    Enum.reduce(statuses, %{}, fn {id, matches}, acc ->
+      Map.put(acc, id, Enum.into(matches, %{}, &put_elem(&1, 1, 0)))
     end)
   end
 
   ##### Helping functions ####
+
+  defp add_to_statuses(stairs = %Stairs{participants: participants}, _id)
+       when map_size(participants) == 1 do
+    stairs
+  end
+
+  defp add_to_statuses(stairs = %Stairs{participants: participants, statuses: statuses}, new_id)
+       when map_size(participants) == 2 and map_size(statuses) == 0 do
+    statuses =
+      participants
+      |> get_first_id_different_from(new_id)
+      |> empty_statuses()
+
+    stairs
+    |> Map.put(:statuses, statuses)
+    |> add_to_statuses(new_id)
+  end
+
+  defp add_to_statuses(stairs = %Stairs{statuses: statuses}, id) do
+    stairs
+    |> Map.put(:statuses, matching_new_pairs(statuses, id))
+  end
+
+  defp get_first_id_different_from(participants, new_id) do
+    [first | _rest] =
+      participants
+      |> Map.delete(new_id)
+      |> Map.keys()
+
+    first
+  end
+
+  defp empty_statuses(id) do
+    %{id => %{}}
+  end
 
   defp matching_new_pairs(statuses, id) do
     statuses
@@ -178,4 +212,15 @@ defmodule Parear.Stairs do
       end)
     end)
   end
+
+  defp remove_participant_statuses(stairs = %Stairs{statuses: statuses}, %Participant{id: id}) do
+    %{stairs | statuses: Map.delete(statuses, id)}
+  end
+
+  defp clean_up_single_participant_statuses(stairs = %Stairs{participants: participants})
+       when map_size(participants) == 1 do
+    %{stairs | statuses: %{}}
+  end
+
+  defp clean_up_single_participant_statuses(stairs), do: stairs
 end

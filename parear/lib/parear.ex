@@ -1,8 +1,17 @@
 defmodule Parear do
   def new_stairs(name, options \\ []) do
-    spec = {Parear.Server, %{name: name, options: options}}
-    {:ok, pid} = DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
-    pid
+    start_stairs(%{name: name, options: options})
+    |> reply()
+  end
+
+  def reload(id) do
+    start_stairs(%{id: id})
+    |> reply()
+  end
+
+  def reload_by_name(name) do
+    start_stairs(%{name: name})
+    |> reply()
   end
 
   def add_participant(stairs, name) do
@@ -29,9 +38,12 @@ defmodule Parear do
     GenServer.call(stairs, {:list})
   end
 
-  def reload(id) do
-    spec = {Parear.Server, %{id: id}}
-    {:ok, pid} = DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
-    pid
+  ## Helper methods
+  defp start_stairs(args = %{}) do
+    spec = {Parear.Server, args}
+    DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
   end
+
+  defp reply({:ok, pid}), do: pid
+  defp reply(error = {:error, _reason}), do: error
 end

@@ -35,19 +35,18 @@ defmodule Parear.StairsTest do
       stairs
       |> Stairs.statuses_for_participant(participant)
 
-    assert %{} == statuses
+    assert nil == statuses
   end
 
   test "Adding a second participant automatically matches with everybody else", %{
     simple_stairs: stairs
   } do
-    assert Enum.count(stairs.participants) == 2
+    assert map_size(stairs.participants) == 2
 
     vitor = stairs |> Stairs.find_participant_by_name("Vitor")
     kenya = stairs |> Stairs.find_participant_by_name("Kenya")
 
-    assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
-    assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
+    assert %{vitor.id => %{kenya.id => 0}, kenya.id => %{vitor.id => 0}} == stairs.statuses
   end
 
   test "Pairing two participants automatically updates their pair count", %{simple_stairs: stairs} do
@@ -121,6 +120,18 @@ defmodule Parear.StairsTest do
     assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
+  test "Should delete statuses from removed participant", %{simple_stairs: stairs} do
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    stairs = stairs |> Stairs.remove_participant(vitor)
+    assert nil == stairs |> Stairs.statuses_for_participant(vitor)
+  end
+
+  test "Should clean up single participant statuses", %{simple_stairs: stairs} do
+    stairs = stairs |> Stairs.remove_participant("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    assert nil == stairs |> Stairs.statuses_for_participant(kenya)
+  end
+
   test "Should limit maximum of pairing between participants" do
     stairs =
       Stairs.new("Limited Stairs", limit: 2)
@@ -150,6 +161,14 @@ defmodule Parear.StairsTest do
       |> Stairs.unpair("Notregistered", "Kenya")
 
     assert msg == "unknown_participant"
+  end
+
+  test "Should not create empty statuses for single participant in stairs" do
+    stairs =
+      Stairs.new("Single Participant Stairs")
+      |> Stairs.add_participant("Vitor")
+
+    assert %{} == stairs.statuses
   end
 
   defp stairs_with_two_participants() do

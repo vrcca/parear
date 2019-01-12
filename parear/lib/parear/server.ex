@@ -15,8 +15,14 @@ defmodule Parear.Server do
     {:ok, new_stairs}
   end
 
-  def init(%{id: id}) do
+  def init(args = %{id: id}) do
     Repository.find_by_id(%Stairs{id: id})
+    |> reply_init(args)
+  end
+
+  def init(args = %{name: name}) do
+    Repository.find_by_name(%Stairs{name: name})
+    |> reply_init(args)
   end
 
   def handle_call({:add_participant, name}, _from, stairs) do
@@ -94,4 +100,7 @@ defmodule Parear.Server do
       Map.put(acc, find.(id), converted_friends)
     end)
   end
+
+  defp reply_init({:none}, args), do: {:stop, %{reason: :stairs_could_not_be_found, args: args}}
+  defp reply_init({:ok, stairs}, _args), do: {:ok, stairs}
 end
