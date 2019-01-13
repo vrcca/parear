@@ -6,7 +6,7 @@ defmodule Repository.Parear.PairStatusTest do
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    %{pair_stairs: Parear.Stairs.new("Whiskey", limit: 10)}
+    %{pair_stairs: Parear.Stairs.new("Another Whiskey", limit: 10)}
   end
 
   test "Returns empty when there are no participants", %{pair_stairs: stairs} do

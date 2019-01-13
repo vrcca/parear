@@ -11,7 +11,7 @@ defmodule Repository.Parear.Participant do
 
   def changeset(participant, params \\ %{}) do
     participant
-    |> cast(params, [:id, :name])
+    |> cast(params, [:id, :name, :stair_id])
     |> validate_required([:id, :name])
   end
 
@@ -30,7 +30,13 @@ defmodule Repository.Parear.Participant do
     end
   end
 
-  defp find_by_id(id) do
+  def find_by_id(id) do
     Repo.get_by(Participant, %{id: id})
+  end
+
+  def insert(participant = %Parear.Participant{}, %Parear.Stairs{id: stairs_id}) do
+    %Participant{stair_id: stairs_id}
+    |> changeset(Map.from_struct(participant))
+    |> Repo.insert()
   end
 end

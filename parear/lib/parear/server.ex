@@ -1,7 +1,7 @@
 defmodule Parear.Server do
   use GenServer
 
-  alias Parear.{Stairs, Repository}
+  alias Parear.{Stairs, Participant, ParticipantRepository, Repository}
 
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
@@ -26,9 +26,12 @@ defmodule Parear.Server do
   end
 
   def handle_call({:add_participant, name}, _from, stairs) do
-    Stairs.add_participant(stairs, name)
-    |> Repository.save()
-    |> reply_ok()
+    with new_participant <- Participant.new(name),
+         updated_stairs <- Stairs.add_participant(stairs, new_participant),
+         {:ok, _} <- ParticipantRepository.insert(new_participant, updated_stairs) do
+      updated_stairs
+      |> reply_ok()
+    end
   end
 
   def handle_call({:pair, participant, another}, _from, stairs) do

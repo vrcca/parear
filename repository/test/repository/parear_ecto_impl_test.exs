@@ -1,10 +1,10 @@
-defmodule Repository.Parear.EctoImplTest do
+defmodule Repository.ParearEctoImplTest do
   alias Repository.Parear.Repo
   use ExUnit.Case, async: true
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
-    %{pair_stairs: Parear.Stairs.new("Whiskey", limit: 10)}
+    %{pair_stairs: Parear.Stairs.new("New Whiskey", limit: 10)}
   end
 
   test "Should return ok and domain stairs when found by id", %{pair_stairs: stairs} do

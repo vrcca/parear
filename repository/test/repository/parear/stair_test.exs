@@ -85,12 +85,10 @@ defmodule Repository.Parear.StairTest do
       |> Parear.Stairs.add_participant("Vitor")
       |> Parear.Stairs.add_participant("Kenya")
       |> Parear.Stairs.pair("Vitor", "Kenya")
-      |> IO.inspect()
 
     stairs_with_removed_participant =
       stairs_with_status
       |> Parear.Stairs.remove_participant("Kenya")
-      |> IO.inspect()
 
     {:ok, _} = Stair.save_cascade(stairs_with_removed_participant)
 
@@ -99,7 +97,7 @@ defmodule Repository.Parear.StairTest do
       |> Stair.load_pair_statuses()
       |> Map.get(:pair_statuses)
 
-    assert true == pair_statuses
+    assert [] == pair_statuses
   end
 
   defp has_participant_named?(stair = %Stair{}, name) do

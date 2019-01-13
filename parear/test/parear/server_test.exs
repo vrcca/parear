@@ -16,8 +16,10 @@ defmodule Parear.ServerTest do
   end
 
   test "Adds participants", %{server: server} do
+    Parear.add_participant(server, "Kenya")
     {:ok, %{stairs: stairs}} = Parear.add_participant(server, "Vitor")
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
+    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
 
   test "Reloads from repository by id", %{server: server} do

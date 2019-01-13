@@ -1,5 +1,6 @@
 defmodule Parear.Support.MemoryRepository do
-  alias Parear.{Stairs, Repository}
+  alias Parear.{Stairs, ParticipantRepository, Participant, Repository}
+  alias Parear.Support.MemoryRepository
 
   use Agent
 
@@ -17,37 +18,51 @@ defmodule Parear.Support.MemoryRepository do
 
   def get_by_name(name) do
     Agent.get(@repo, fn state ->
-      Enum.find(state, fn {_id, stairs} ->
-        stairs.name == name
+      Enum.find(state, fn {_id, value} ->
+        value.name == name
       end)
     end)
   end
 
-  def save(stairs = %Stairs{id: id}) do
+  def save(id, value) do
     Agent.update(@repo, fn state ->
-      Map.put(state, id, stairs)
+      Map.put(state, id, value)
     end)
   end
 
   defimpl Repository, for: Stairs do
     def find_by_id(%Stairs{id: id}) do
-      Parear.Support.MemoryRepository.get_by_id(id)
-      |> respond_to_find()
+      MemoryRepository.get_by_id(id)
+      |> MemoryRepository.respond_to_find()
     end
 
     def find_by_name(%Stairs{name: name}) do
-      Parear.Support.MemoryRepository.get_by_name(name)
-      |> respond_to_find()
+      MemoryRepository.get_by_name(name)
+      |> MemoryRepository.respond_to_find()
     end
 
-    def save(stairs = %Stairs{}) do
-      with :ok <- Parear.Support.MemoryRepository.save(stairs) do
+    def save(stairs = %Stairs{id: id}) do
+      with :ok <- MemoryRepository.save(id, stairs) do
         stairs
       end
     end
-
-    defp respond_to_find(nil), do: {:none}
-    defp respond_to_find({_id, stairs}), do: {:ok, stairs}
-    defp respond_to_find(stairs), do: {:ok, stairs}
   end
+
+  defimpl ParticipantRepository, for: Participant do
+    def find_by_id(%Participant{id: id}) do
+      MemoryRepository.get_by_id(id)
+      |> MemoryRepository.respond_to_find()
+    end
+
+    def insert(participant = %Participant{id: id}, stairs = %Stairs{id: stairs_id}) do
+      with :ok <- MemoryRepository.save(stairs_id, stairs),
+           :ok <- MemoryRepository.save(id, participant) do
+        {:ok, participant}
+      end
+    end
+  end
+
+  def respond_to_find(nil), do: {:none}
+  def respond_to_find({_id, value}), do: {:ok, value}
+  def respond_to_find(value), do: {:ok, value}
 end

@@ -1,19 +1,20 @@
-defmodule Repository.Parear.EctoImpl do
-  alias Repository.Parear.{Stair, EctoImpl}
+defmodule Repository.ParearEctoImpl do
+  alias Repository.Parear.Stair
+  alias Repository.ParearEctoImpl
 
   defimpl Parear.Repository, for: Parear.Stairs do
     def find_by_id(%Parear.Stairs{id: id}) do
       Stair.find_by_id(id)
-      |> EctoImpl.respond_to_find()
+      |> ParearEctoImpl.respond_to_find()
     end
 
     def find_by_name(%Parear.Stairs{name: name}) do
       Stair.find_by_name(name)
-      |> EctoImpl.respond_to_find()
+      |> ParearEctoImpl.respond_to_find()
     end
 
     def save(stairs = %Parear.Stairs{}) do
-      with {:ok, _result} <- Repository.Parear.Stair.save_cascade(stairs) do
+      with {:ok, _result} <- Stair.save_cascade(stairs) do
         stairs
       end
     end
@@ -31,7 +32,7 @@ defmodule Repository.Parear.EctoImpl do
     {:ok, stairs}
   end
 
-  defp to_domain(response = %Repository.Parear.Stair{}) do
+  defp to_domain(response = %Stair{}) do
     %Parear.Stairs{
       id: response.id,
       name: response.name,
@@ -43,10 +44,6 @@ defmodule Repository.Parear.EctoImpl do
 
   defp to_domain(%Repository.Parear.Participant{id: id, name: name}) do
     %Parear.Participant{id: id, name: name}
-  end
-
-  defp to_domain(participant = %Repository.Parear.PairStatus{}) do
-    %Parear.Participant{id: participant.id, name: participant.name}
   end
 
   defp to_participants_domain(participants) when is_list(participants) do
