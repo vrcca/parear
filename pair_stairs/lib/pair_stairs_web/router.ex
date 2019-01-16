@@ -17,6 +17,12 @@ defmodule PairStairsWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+
+    scope "/stairs" do
+      get "/", StairsController, :new
+      post "/", StairsController, :create
+      get "/:id", StairsController, :show
+    end
   end
 
   # Other scopes may use custom stacks.

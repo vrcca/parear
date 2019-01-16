@@ -1,0 +1,7 @@
+<%= form_for(@conn, Routes.stairs_path(@conn, :create), [as: :new_stairs, method: :post], fn form -> %>
+  <%= label form, :name, "Name" %>
+  <%= text_input(form, :name, autocomplete: "off", autofocus: true, required: true) %>
+  <%= label form, :limit, "Limit" %>
+  <%= number_input(form, :limit, autocomplete: "off", autofocus: true, required: true) %>
+  <%= submit("Submit") %>
+<%  end) %>

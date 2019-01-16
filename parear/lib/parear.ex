@@ -4,6 +4,10 @@ defmodule Parear do
     |> reply()
   end
 
+  def reload_by_id(id) do
+    start_stairs(%{id: id})
+  end
+
   def reload(id) do
     start_stairs(%{id: id})
     |> reply()

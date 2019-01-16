@@ -1,0 +1,4 @@
+<label>Name:</label>
+<span><%= @stairs.name %></span>
+<label>Limit:</label>
+<span><%= @stairs.limit %></span>
