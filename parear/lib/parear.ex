@@ -14,10 +14,6 @@ defmodule Parear do
     Loader.load_by_name(name)
   end
 
-  def add_participant(stairs, name) when is_pid(stairs) do
-    GenServer.call(stairs, {:add_participant, name})
-  end
-
   def add_participant(id, name) do
     GenServer.call(from_registry(id), {:add_participant, name})
   end
