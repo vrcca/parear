@@ -19,9 +19,9 @@ defmodule ParearTest do
     assert not (stairs.id == "")
   end
 
-  test "Adds participants", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Kenya")
-    {:ok, %{stairs: stairs}} = Parear.add_participant(stairs_pid, "Vitor")
+  test "Adds participants", %{stairs_id: stairs_id} do
+    Parear.add_participant(stairs_id, "Kenya")
+    {:ok, %{stairs: stairs}} = Parear.add_participant(stairs_id, "Vitor")
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
@@ -84,8 +84,11 @@ defmodule ParearTest do
     assert stairs == reloaded_stairs
   end
 
-  test "Persists removed participants to repository", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Vitor")
+  test "Persists removed participants to repository", %{
+    stairs_pid: stairs_pid,
+    stairs_id: stairs_id
+  } do
+    Parear.add_participant(stairs_id, "Vitor")
     Parear.remove_participant(stairs_pid, "Vitor")
     {:ok, stairs} = Parear.list(stairs_pid)
 
@@ -96,9 +99,9 @@ defmodule ParearTest do
     assert stairs == reloaded_stairs
   end
 
-  test "Persists new pairings to repository", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Vitor")
-    Parear.add_participant(stairs_pid, "Kenya")
+  test "Persists new pairings to repository", %{stairs_pid: stairs_pid, stairs_id: stairs_id} do
+    Parear.add_participant(stairs_id, "Vitor")
+    Parear.add_participant(stairs_id, "Kenya")
     Parear.pair(stairs_pid, "Vitor", "Kenya")
     {:ok, stairs} = Parear.list(stairs_pid)
 
@@ -109,9 +112,9 @@ defmodule ParearTest do
     assert stairs == reloaded_stairs
   end
 
-  test "Persists undone pairings to repository", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Vitor")
-    Parear.add_participant(stairs_pid, "Kenya")
+  test "Persists undone pairings to repository", %{stairs_pid: stairs_pid, stairs_id: stairs_id} do
+    Parear.add_participant(stairs_id, "Vitor")
+    Parear.add_participant(stairs_id, "Kenya")
     Parear.pair(stairs_pid, "Vitor", "Kenya")
     Parear.unpair(stairs_pid, "Vitor", "Kenya")
     {:ok, stairs} = Parear.list(stairs_pid)
@@ -123,9 +126,9 @@ defmodule ParearTest do
     assert stairs == reloaded_stairs
   end
 
-  test "Persists reseted counters to repository", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Vitor")
-    Parear.add_participant(stairs_pid, "Kenya")
+  test "Persists reseted counters to repository", %{stairs_pid: stairs_pid, stairs_id: stairs_id} do
+    Parear.add_participant(stairs_id, "Vitor")
+    Parear.add_participant(stairs_id, "Kenya")
     Parear.pair(stairs_pid, "Vitor", "Kenya")
     Parear.reset_all_counters(stairs_pid)
     {:ok, stairs} = Parear.list(stairs_pid)
