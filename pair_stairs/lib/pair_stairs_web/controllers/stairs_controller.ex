@@ -17,12 +17,7 @@ defmodule PairStairsWeb.StairsController do
   end
 
   def show(conn, %{"id" => id}) do
-    stairs = Parear.reload_by_id(id)
-    render(conn, "index.html", stairs: stairs |> get_infos())
-  end
-
-  defp get_infos(stairs) do
-    {:ok, infos} = Parear.list(stairs)
-    infos
+    {:ok, stairs} = Parear.list(id)
+    render(conn, "index.html", stairs: stairs)
   end
 end
