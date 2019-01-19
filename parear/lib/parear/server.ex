@@ -3,26 +3,45 @@ defmodule Parear.Server do
 
   alias Parear.{Stairs, Participant, ParticipantRepository, Repository}
 
+  def start_link(stairs = %Stairs{id: id}) do
+    name = via_tuple(id)
+    GenServer.start_link(__MODULE__, stairs, name: name)
+  end
+
+  def start_link(args = %{id: id}) do
+    name = via_tuple(id)
+    GenServer.start_link(__MODULE__, args, name: name)
+  end
+
   def start_link(args) do
     GenServer.start_link(__MODULE__, args)
   end
 
-  def init(%{name: name, options: options}) do
-    new_stairs =
-      Stairs.new(name, options)
+  defp via_tuple(stairs_id) do
+    {:via, Registry, {Registry.Stairs, stairs_id}}
+  end
+
+  def init(stairs = %Stairs{}) do
+    saved_stairs =
+      stairs
       |> Repository.save()
 
-    {:ok, new_stairs}
+    {:ok, saved_stairs}
   end
 
-  def init(args = %{id: id}) do
+  def init(%{name: name, options: options}) do
+    Stairs.new(name, options)
+    |> init()
+  end
+
+  def init(%{id: id}) do
     Repository.find_by_id(%Stairs{id: id})
-    |> reply_init(args)
+    |> reply_init()
   end
 
-  def init(args = %{name: name}) do
+  def init(%{name: name}) do
     Repository.find_by_name(%Stairs{name: name})
-    |> reply_init(args)
+    |> reply_init()
   end
 
   def handle_call({:add_participant, name}, _from, stairs) do
@@ -104,6 +123,6 @@ defmodule Parear.Server do
     end)
   end
 
-  defp reply_init({:none}, args), do: {:stop, %{reason: :stairs_could_not_be_found, args: args}}
-  defp reply_init({:ok, stairs}, _args), do: {:ok, stairs}
+  defp reply_init({:none}), do: {:stop, :stairs_could_not_be_found}
+  defp reply_init({:ok, stairs}), do: {:ok, stairs}
 end

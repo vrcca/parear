@@ -10,28 +10,15 @@ defmodule PairStairsWeb.StairsController do
 
   def create(conn, %{"new_stairs" => %{"name" => name, "limit" => limit}}) do
     with stairs <- Parear.new_stairs(name, limit: limit),
-         {:ok, %Stairs{id: stairs_id}} <- Parear.list(stairs),
-         all_stairs <- conn |> get_session(:stairs) || %{} do
+         {:ok, %Stairs{id: stairs_id}} <- Parear.list(stairs) do
       conn
-      |> put_session(:stairs, Map.put(all_stairs, stairs_id, stairs))
       |> redirect(to: Routes.stairs_path(conn, :show, stairs_id))
     end
   end
 
   def show(conn, %{"id" => id}) do
-    all_stairs = conn |> get_session(:stairs) || %{}
-    stairs = all_stairs |> Map.get_lazy(id, fn -> retrieve_from_database(id) end)
-
-    conn
-    |> put_session(:stairs, Map.put(all_stairs, id, stairs))
-
+    stairs = Parear.reload_by_id(id)
     render(conn, "index.html", stairs: stairs |> get_infos())
-  end
-
-  defp retrieve_from_database(id) do
-    with {:ok, stairs} <- Parear.reload(id) do
-      stairs |> IO.inspect()
-    end
   end
 
   defp get_infos(stairs) do

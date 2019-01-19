@@ -1,20 +1,21 @@
 defmodule Parear do
+  alias Parear.Stairs
+  alias Parear.Repository
+
   def new_stairs(name, options \\ []) do
-    start_stairs(%{name: name, options: options})
+    Stairs.new(name, options)
+    |> start_stairs()
     |> reply()
   end
 
   def reload_by_id(id) do
     start_stairs(%{id: id})
-  end
-
-  def reload(id) do
-    start_stairs(%{id: id})
     |> reply()
   end
 
   def reload_by_name(name) do
-    start_stairs(%{name: name})
+    Repository.find_by_name(%Stairs{name: name})
+    |> start_stairs()
     |> reply()
   end
 
@@ -43,11 +44,15 @@ defmodule Parear do
   end
 
   ## Helper methods
-  defp start_stairs(args = %{}) do
+  defp start_stairs({:ok, stairs = %Stairs{}}), do: start_stairs(stairs)
+  defp start_stairs({:none}), do: reply({:error, :stairs_could_not_be_found})
+
+  defp start_stairs(args) do
     spec = {Parear.Server, args}
     DynamicSupervisor.start_child(Parear.DynamicSupervisor, spec)
   end
 
   defp reply({:ok, pid}), do: pid
+  defp reply({:error, {:already_started, pid}}), do: pid
   defp reply(error = {:error, _reason}), do: error
 end
