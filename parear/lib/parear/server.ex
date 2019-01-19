@@ -13,10 +13,6 @@ defmodule Parear.Server do
     GenServer.start_link(__MODULE__, args, name: name)
   end
 
-  def start_link(args) do
-    GenServer.start_link(__MODULE__, args)
-  end
-
   defp via_tuple(stairs_id) do
     {:via, Registry, {Registry.Stairs, stairs_id}}
   end
@@ -29,18 +25,8 @@ defmodule Parear.Server do
     {:ok, saved_stairs}
   end
 
-  def init(%{name: name, options: options}) do
-    Stairs.new(name, options)
-    |> init()
-  end
-
   def init(%{id: id}) do
     Repository.find_by_id(%Stairs{id: id})
-    |> reply_init()
-  end
-
-  def init(%{name: name}) do
-    Repository.find_by_name(%Stairs{name: name})
     |> reply_init()
   end
 
