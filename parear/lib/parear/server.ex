@@ -4,29 +4,23 @@ defmodule Parear.Server do
   alias Parear.{Stairs, Participant, ParticipantRepository, Repository}
 
   def start_link(stairs = %Stairs{id: id}) do
-    name = via_tuple(id)
+    name = {:via, Registry, {Registry.Stairs, id}}
     GenServer.start_link(__MODULE__, stairs, name: name)
   end
 
   def start_link(args = %{id: id}) do
-    name = via_tuple(id)
+    name = {:via, Registry, {Registry.Stairs, id}}
     GenServer.start_link(__MODULE__, args, name: name)
   end
 
-  defp via_tuple(stairs_id) do
-    {:via, Registry, {Registry.Stairs, stairs_id}}
-  end
-
   def init(stairs = %Stairs{}) do
-    saved_stairs =
-      stairs
-      |> Repository.save()
-
-    {:ok, saved_stairs}
+    stairs
+    |> reply_init()
   end
 
   def init(%{id: id}) do
-    Repository.find_by_id(%Stairs{id: id})
+    %Stairs{id: id}
+    |> Repository.find_by_id()
     |> reply_init()
   end
 
@@ -57,6 +51,12 @@ defmodule Parear.Server do
 
   def handle_call({:remove_participant, name}, _from, stairs) do
     Stairs.remove_participant(stairs, name)
+    |> Repository.save()
+    |> reply_ok()
+  end
+
+  def handle_call({:save}, _from, stairs) do
+    stairs
     |> Repository.save()
     |> reply_ok()
   end
@@ -111,4 +111,5 @@ defmodule Parear.Server do
 
   defp reply_init({:none}), do: {:stop, :stairs_could_not_be_found}
   defp reply_init({:ok, stairs}), do: {:ok, stairs}
+  defp reply_init(stairs = %Stairs{}), do: {:ok, stairs}
 end
