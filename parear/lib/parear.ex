@@ -34,8 +34,12 @@ defmodule Parear do
     GenServer.call(stairs, {:remove_participant, name})
   end
 
-  def list(stairs) do
+  def list(stairs) when is_pid(stairs) do
     GenServer.call(stairs, {:list})
+  end
+
+  def list(stairs) do
+    GenServer.call(from_registry(stairs), {:list})
   end
 
   defp from_registry(stairs_id) do

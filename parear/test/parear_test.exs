@@ -11,8 +11,8 @@ defmodule ParearTest do
     %{stairs_pid: stairs_pid, stairs_id: id}
   end
 
-  test "Creates stairs", %{stairs_pid: stairs_pid} do
-    {:ok, stairs} = Parear.list(stairs_pid)
+  test "Creates stairs", %{stairs_id: stairs_id} do
+    {:ok, stairs} = Parear.list(stairs_id)
     assert stairs.name == "Whiskey"
     assert stairs.limit == 10
     assert Enum.empty?(stairs.participants)
@@ -31,15 +31,17 @@ defmodule ParearTest do
       Stairs.new("The new stairs")
       |> Repository.save()
 
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_id(new_stairs.id)
-      |> Parear.list()
+    Parear.reload_by_id(new_stairs.id)
+    {:ok, reloaded_stairs} = Parear.list(new_stairs.id)
 
     assert reloaded_stairs == new_stairs
   end
 
-  test "Returns same stairs process if it already has one", %{stairs_pid: stairs_pid} do
-    {:ok, stairs} = Parear.list(stairs_pid)
+  test "Returns same stairs process if it already has one", %{
+    stairs_pid: stairs_pid,
+    stairs_id: stairs_id
+  } do
+    {:ok, stairs} = Parear.list(stairs_id)
     reloaded_stairs_pid = Parear.reload_by_id(stairs.id)
     assert reloaded_stairs_pid == stairs_pid
   end
@@ -49,15 +51,17 @@ defmodule ParearTest do
       Stairs.new("The new stairs")
       |> Repository.save()
 
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_name(new_stairs.name)
-      |> Parear.list()
+    Parear.reload_by_name(new_stairs.name)
+    {:ok, reloaded_stairs} = Parear.list(new_stairs.id)
 
     assert reloaded_stairs == new_stairs
   end
 
-  test "Reloading from repository by name returns same process", %{stairs_pid: stairs_pid} do
-    {:ok, stairs} = Parear.list(stairs_pid)
+  test "Reloading from repository by name returns same process", %{
+    stairs_pid: stairs_pid,
+    stairs_id: stairs_id
+  } do
+    {:ok, stairs} = Parear.list(stairs_id)
     reloaded_stairs_pid = Parear.reload_by_name(stairs.name)
     assert reloaded_stairs_pid == stairs_pid
   end
@@ -72,14 +76,12 @@ defmodule ParearTest do
     assert reason == :stairs_could_not_be_found
   end
 
-  test "Persists new participants to repository by id", %{stairs_pid: pid, stairs_id: id} do
+  test "Persists new participants to repository by id", %{stairs_id: id} do
     Parear.add_participant(id, "Vitor")
+    {:ok, stairs} = Parear.list(id)
 
-    {:ok, stairs} = Parear.list(pid)
-
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_id(id)
-      |> Parear.list()
+    Parear.reload_by_id(id)
+    {:ok, reloaded_stairs} = Parear.list(id)
 
     assert stairs == reloaded_stairs
   end
@@ -90,11 +92,10 @@ defmodule ParearTest do
   } do
     Parear.add_participant(stairs_id, "Vitor")
     Parear.remove_participant(stairs_pid, "Vitor")
-    {:ok, stairs} = Parear.list(stairs_pid)
+    {:ok, stairs} = Parear.list(stairs_id)
 
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_id(stairs.id)
-      |> Parear.list()
+    Parear.reload_by_id(stairs.id)
+    {:ok, reloaded_stairs} = Parear.list(stairs_id)
 
     assert stairs == reloaded_stairs
   end
@@ -103,11 +104,10 @@ defmodule ParearTest do
     Parear.add_participant(stairs_id, "Vitor")
     Parear.add_participant(stairs_id, "Kenya")
     Parear.pair(stairs_pid, "Vitor", "Kenya")
-    {:ok, stairs} = Parear.list(stairs_pid)
+    {:ok, stairs} = Parear.list(stairs_id)
 
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_id(stairs.id)
-      |> Parear.list()
+    Parear.reload_by_id(stairs.id)
+    {:ok, reloaded_stairs} = Parear.list(stairs_id)
 
     assert stairs == reloaded_stairs
   end
@@ -133,9 +133,8 @@ defmodule ParearTest do
     Parear.reset_all_counters(stairs_pid)
     {:ok, stairs} = Parear.list(stairs_pid)
 
-    {:ok, reloaded_stairs} =
-      Parear.reload_by_id(stairs.id)
-      |> Parear.list()
+    Parear.reload_by_id(stairs_id)
+    {:ok, reloaded_stairs} = Parear.list(stairs_id)
 
     assert stairs == reloaded_stairs
   end
