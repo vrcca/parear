@@ -3,10 +3,9 @@ defmodule Parear.Loader do
 
   def create(name, options \\ []) do
     with new_stairs <- Stairs.new(name, options),
-         {:ok, stairs_pid} <- new_stairs |> start_stairs(),
-         {:ok, _} <- stairs_pid |> save() do
-      stairs_pid
-      |> reply()
+         {:ok, _pid} <- new_stairs |> start_stairs(),
+         {:ok, _} <- new_stairs.id |> save() do
+      reply(new_stairs.id)
     end
   end
 
@@ -33,11 +32,25 @@ defmodule Parear.Loader do
   end
 
   defp save(stairs) do
-    GenServer.call(stairs, {:save})
+    GenServer.call(from_registry(stairs), {:save})
+  end
+
+  defp from_registry(stairs_id) do
+    {:via, Registry, {Registry.Stairs, stairs_id}}
   end
 
   defp reply({:ok, pid}), do: reply(pid)
-  defp reply({:error, {:already_started, pid}}), do: reply(pid)
-  defp reply(pid) when is_pid(pid), do: pid
-  defp reply(error = {:error, _reason}), do: error
+
+  defp reply(id) when is_pid(id) do
+    {:ok, stairs} = GenServer.call(id, {:list})
+    reply(stairs.id)
+  end
+
+  defp reply({:error, {:already_started, pid}}) do
+    reply(pid)
+  end
+
+  defp reply(error = {:error, _reason}) when is_tuple(error), do: error
+
+  defp reply(id), do: id
 end

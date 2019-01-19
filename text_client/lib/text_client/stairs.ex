@@ -11,17 +11,15 @@ defmodule TextClient.Stairs do
     |> on_result("Stairs retrieved.")
   end
 
-  defp execute_option(["/add" | names], stairs) when is_pid(stairs) do
-    {:ok, %Parear.Stairs{id: id}} = Parear.list(stairs)
-
+  defp execute_option(["/add" | names], stairs) do
     Enum.each(names, fn name ->
       name = sanitize_name(name)
-      Parear.add_participant(id, name)
+      Parear.add_participant(stairs, name)
     end)
 
     added_names = Enum.join(names, ", ")
 
-    Parear.list(id)
+    Parear.list(stairs)
     |> on_result("#{added_names} added to the pair stairs.")
   end
 

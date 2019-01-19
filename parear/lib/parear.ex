@@ -14,28 +14,24 @@ defmodule Parear do
     Loader.load_by_name(name)
   end
 
-  def add_participant(id, name) do
-    GenServer.call(from_registry(id), {:add_participant, name})
+  def add_participant(stairs, name) do
+    GenServer.call(from_registry(stairs), {:add_participant, name})
   end
 
   def pair(stairs, participant, another_participant) do
-    GenServer.call(stairs, {:pair, participant, another_participant})
+    GenServer.call(from_registry(stairs), {:pair, participant, another_participant})
   end
 
   def unpair(stairs, participant, another_participant) do
-    GenServer.call(stairs, {:unpair, participant, another_participant})
+    GenServer.call(from_registry(stairs), {:unpair, participant, another_participant})
   end
 
   def reset_all_counters(stairs) do
-    GenServer.call(stairs, {:reset_counters})
+    GenServer.call(from_registry(stairs), {:reset_counters})
   end
 
   def remove_participant(stairs, name) do
-    GenServer.call(stairs, {:remove_participant, name})
-  end
-
-  def list(stairs) when is_pid(stairs) do
-    GenServer.call(stairs, {:list})
+    GenServer.call(from_registry(stairs), {:remove_participant, name})
   end
 
   def list(stairs) do
