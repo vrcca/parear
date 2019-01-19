@@ -7,7 +7,8 @@ defmodule ParearTest do
   setup do
     start_supervised!(Parear.Support.MemoryRepository)
     stairs_pid = Parear.new_stairs("Whiskey", limit: 10)
-    %{stairs_pid: stairs_pid}
+    {:ok, %Stairs{id: id}} = Parear.list(stairs_pid)
+    %{stairs_pid: stairs_pid, stairs_id: id}
   end
 
   test "Creates stairs", %{stairs_pid: stairs_pid} do
@@ -71,12 +72,13 @@ defmodule ParearTest do
     assert reason == :stairs_could_not_be_found
   end
 
-  test "Persists new participants to repository", %{stairs_pid: stairs_pid} do
-    Parear.add_participant(stairs_pid, "Vitor")
-    {:ok, stairs} = Parear.list(stairs_pid)
+  test "Persists new participants to repository by id", %{stairs_pid: pid, stairs_id: id} do
+    Parear.add_participant(id, "Vitor")
+
+    {:ok, stairs} = Parear.list(pid)
 
     {:ok, reloaded_stairs} =
-      Parear.reload_by_id(stairs.id)
+      Parear.reload_by_id(id)
       |> Parear.list()
 
     assert stairs == reloaded_stairs

@@ -14,8 +14,12 @@ defmodule Parear do
     Loader.load_by_name(name)
   end
 
-  def add_participant(stairs, name) do
+  def add_participant(stairs, name) when is_pid(stairs) do
     GenServer.call(stairs, {:add_participant, name})
+  end
+
+  def add_participant(id, name) do
+    GenServer.call(from_registry(id), {:add_participant, name})
   end
 
   def pair(stairs, participant, another_participant) do
@@ -36,5 +40,9 @@ defmodule Parear do
 
   def list(stairs) do
     GenServer.call(stairs, {:list})
+  end
+
+  defp from_registry(stairs_id) do
+    {:via, Registry, {Registry.Stairs, stairs_id}}
   end
 end
