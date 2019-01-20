@@ -1,8 +1,6 @@
 defmodule PairStairsWeb.StairsController do
   use PairStairsWeb, :controller
 
-  alias Parear.Stairs
-
   def new(conn, _params) do
     put_in(conn.params["new_stairs"], %{"limit" => "5"})
     |> render("new.html")
@@ -20,6 +18,6 @@ defmodule PairStairsWeb.StairsController do
       Parear.reload_by_id(id)
       |> Parear.list()
 
-    render(conn, "index.html", stairs: stairs)
+    render(conn, "show.html", stairs: stairs)
   end
 end
