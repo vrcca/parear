@@ -9,3 +9,12 @@
     <li id="<%= id%>"><%= participant.name %></li>
   <% end %>
 </ol>    
+<label>Counts:</label>
+<ol>
+  <%= for {id, friends} <- @stairs.statuses,
+          {friend_id, total} <- friends do %>
+<% name =  @stairs.participants[id].name
+   friend_name = @stairs.participants[friend_id].name  %>
+    <li id="<%= id%>"><%= name %>-<%=friend_name%>: <%=total%></li>
+  <% end %>
+</ol>    
