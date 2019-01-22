@@ -1,3 +1,4 @@
+
 <label>Name:</label>
 <span><%= @stairs.name %></span>
 <label>Limit:</label>
@@ -5,16 +6,17 @@
 
 <label>Participants:</label>
 <ol>
-  <%= for {id, participant} <- @stairs.participants do %>
-    <li id="<%= id%>"><%= participant.name %></li>
-  <% end %>
+    <%= for {id, participant} <- @stairs.participants do %>
+        <li id="<%= id%>"><%= participant.name %></li>
+    <% end %>
 </ol>    
 <label>Counts:</label>
 <ol>
-  <%= for {id, friends} <- @stairs.statuses,
-          {friend_id, total} <- friends do %>
-<% name =  @stairs.participants[id].name
-   friend_name = @stairs.participants[friend_id].name  %>
-    <li id="<%= id%>"><%= name %>-<%=friend_name%>: <%=total%></li>
-  <% end %>
-</ol>    
+    <%= for {id, friends} <- @stairs.statuses,
+    {friend_id, total} <- friends do %>
+        <% name =  @stairs.participants[id].name
+        friend_name = @stairs.participants[friend_id].name  %>
+        <li id="<%= id%>"><%= name %>-<%=friend_name%>: <%=total%></li>
+    <% end %>
+</ol>
+
