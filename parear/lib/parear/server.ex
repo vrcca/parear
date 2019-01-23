@@ -19,9 +19,19 @@ defmodule Parear.Server do
   end
 
   def init(%{id: id}) do
-    %Stairs{id: id}
+    {:ok, %Stairs{id: id}, {:continue, :init_by_stairs_id}}
+  end
+
+  def handle_continue(:init_by_stairs_id, stairs_with_id = %Stairs{}) do
+    stairs_with_id
     |> Repository.find_by_id()
-    |> reply_init()
+    |> case do
+      {:none} ->
+        {:stop, :stairs_could_not_be_found, stairs_with_id}
+
+      {:ok, stairs = %Stairs{}} ->
+        {:noreply, stairs}
+    end
   end
 
   def handle_call({:add_participant, name}, _from, stairs) do

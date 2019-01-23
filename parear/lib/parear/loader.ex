@@ -42,13 +42,19 @@ defmodule Parear.Loader do
   defp reply({:ok, pid}), do: reply(pid)
 
   defp reply(id) when is_pid(id) do
-    {:ok, stairs} = GenServer.call(id, {:list})
-    reply(stairs.id)
+    try do
+      {:ok, stairs} = GenServer.call(id, {:list})
+      reply(stairs.id)
+    catch
+      :exit, e -> reply(e)
+    end
   end
 
   defp reply({:error, {:already_started, pid}}) do
     reply(pid)
   end
+
+  defp reply({:stairs_could_not_be_found, _}), do: {:error, :stairs_could_not_be_found}
 
   defp reply(error = {:error, _reason}) when is_tuple(error), do: error
 
