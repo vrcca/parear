@@ -1,15 +1,10 @@
+<div class="stairs-profile">
+    <span>
+        <strong><%= gettext("Name") %>:</strong>
+        <%= @stairs.name %> (<%= gettext("Limit") %>: <%= @stairs.limit %>)
+    </span>
+</div>
 
-<label>Name:</label>
-<span><%= @stairs.name %></span>
-<label>Limit:</label>
-<span><%= @stairs.limit %></span>
-
-<label>Participants:</label>
-<ol>
-    <%= for {id, participant} <- @stairs.participants do %>
-        <li id="<%= id%>"><%= participant.name %></li>
-    <% end %>
-</ol>    
 <label>Counts:</label>
 <ol>
     <%= for {id, friends} <- @stairs.statuses,
@@ -20,3 +15,33 @@
     <% end %>
 </ol>
 
+
+<%= gettext("Stairs") %>
+
+<div class="container">
+
+    <%= for {id, friends} <- @stairs.statuses do %>
+        <div class="row">
+            <div class="column pair-name">
+                <%= @stairs |> name_by_id(id) %>
+            </div>
+            <%= for {friend_id, total} <- friends do %>
+                <div class="column">
+                    <span"><%= total %></span>
+                </div>
+            <% end %>
+            <div class="column">
+                <span">0</span>
+            </div>
+        </div>
+    <% end %>
+    <div class="row">
+        <div class="column">
+        </div>
+        <%= for {id, friends} <- @stairs.statuses do %>
+            <div class="column pair-name">
+                <%= @stairs |> name_by_id(id) %>
+            </div>
+        <% end %>
+    </div>
+</div>
