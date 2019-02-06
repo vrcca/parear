@@ -18,10 +18,8 @@ defmodule PairStairsWeb.Router do
 
     get "/", PageController, :index
 
-    scope "/stairs" do
-      get "/new", StairsController, :new
-      post "/", StairsController, :create
-      get "/:id", StairsController, :show
+    resources "/stairs", StairsController, only: [:new, :create, :show] do
+      resources "/participants", ParticipantController, only: [:new, :create]
     end
   end
 

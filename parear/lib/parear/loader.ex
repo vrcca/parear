@@ -50,13 +50,8 @@ defmodule Parear.Loader do
     end
   end
 
-  defp reply({:error, {:already_started, pid}}) do
-    reply(pid)
-  end
-
+  defp reply({:error, {:already_started, pid}}), do: reply(pid)
   defp reply({:stairs_could_not_be_found, _}), do: {:error, :stairs_could_not_be_found}
-
   defp reply(error = {:error, _reason}) when is_tuple(error), do: error
-
   defp reply(id), do: id
 end
