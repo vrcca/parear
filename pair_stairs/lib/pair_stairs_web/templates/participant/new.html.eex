@@ -1,2 +1,0 @@
-<%= return_to_stairs_button(@conn) %>
-<div>New Participant</div>

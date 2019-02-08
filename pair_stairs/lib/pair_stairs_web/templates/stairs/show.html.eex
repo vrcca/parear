@@ -1,8 +1,6 @@
 <div class="stairs-profile">
-    <span>
-        <strong><%= gettext("Name") %>:</strong>
-        <%= @stairs.name %> (<%= gettext("Limit") %>: <%= @stairs.limit %>)
-    </span>
+    <h1><%= @stairs.name %></h1>
+    <span>(<%= gettext("Limit") %>: <%= @stairs.limit %>)</span>
 </div>
 
 <label>Counts:</label>
@@ -16,7 +14,7 @@
 </ol>
 
 
-<%= gettext("Stairs") %>
+<h2><%= gettext("Stairs") %></h2>
 
 <div class="container">
     <%= for {id, friends} <- @stairs.statuses do %>
@@ -24,7 +22,7 @@
             <div class="column pair-name">
                 <%= @stairs |> name_by_id(id) %>
             </div>
-            <%= for {friend_id, total} <- friends do %>
+            <%= for {_friend_id, total} <- friends do %>
                 <div class="column">
                     <span"><%= total %></span>
                 </div>
@@ -37,7 +35,7 @@
     <div class="row">
         <div class="column">
         </div>
-        <%= for {id, friends} <- @stairs.statuses do %>
+        <%= for {id, _friends} <- @stairs.statuses do %>
             <div class="column pair-name">
                 <%= @stairs |> name_by_id(id) %>
             </div>
@@ -45,4 +43,4 @@
     </div>
 </div>
 
-<%= new_participant_button(@conn, @stairs.id) %>
+<%= manage_participants_button(@conn, @stairs.id) %>

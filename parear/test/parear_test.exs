@@ -90,6 +90,17 @@ defmodule ParearTest do
     assert stairs == reloaded_stairs
   end
 
+  test "Removes participant by id", %{stairs_id: stairs_id} do
+    Parear.add_participant(stairs_id, "Vitor")
+    {:ok, stairs} = Parear.list(stairs_id)
+    vitor_id = find_participant_id_by_name(stairs, "Vitor")
+
+    Parear.remove_participant_by_id(stairs_id, vitor_id)
+    {:ok, updated_stairs} = Parear.list(stairs_id)
+
+    assert nil == find_participant_id_by_name(updated_stairs, "Vitor")
+  end
+
   test "Persists new pairings to repository", %{stairs_id: stairs_id} do
     Parear.add_participant(stairs_id, "Vitor")
     Parear.add_participant(stairs_id, "Kenya")
@@ -127,5 +138,12 @@ defmodule ParearTest do
     {:ok, reloaded_stairs} = Parear.list(stairs_id)
 
     assert stairs == reloaded_stairs
+  end
+
+  defp find_participant_id_by_name(%Stairs{participants: participants}, name) do
+    {id, _participant} =
+      Enum.find(participants, {nil, nil}, fn {_id, participant} -> participant.name == name end)
+
+    id
   end
 end

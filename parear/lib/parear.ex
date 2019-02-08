@@ -34,6 +34,10 @@ defmodule Parear do
     GenServer.call(from_registry(stairs), {:remove_participant, name})
   end
 
+  def remove_participant_by_id(stairs, id) do
+    GenServer.call(from_registry(stairs), {:remove_participant_by_id, id})
+  end
+
   def list(stairs) do
     GenServer.call(from_registry(stairs), {:list})
   end
