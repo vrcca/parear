@@ -18,6 +18,21 @@ defmodule PairStairsWeb.StairsController do
       Parear.reload_by_id(id)
       |> Parear.list()
 
-    render(conn, "show.html", stairs: stairs)
+    conn
+    |> save_to_recently_visited_stairs(stairs)
+    |> render("show.html", stairs: stairs)
+  end
+
+  defp save_to_recently_visited_stairs(conn, stairs) do
+    recent_stairs = conn |> get_session("recent_stairs") || []
+
+    recent_stairs =
+      Enum.filter(recent_stairs, fn s -> s.id != stairs.id end)
+      |> Enum.slice(0, 5)
+
+    stairs_infos = %{id: stairs.id, name: stairs.name}
+
+    conn
+    |> put_session("recent_stairs", [stairs_infos | recent_stairs])
   end
 end

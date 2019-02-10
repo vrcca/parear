@@ -1,4 +1,20 @@
 <section class="phx-hero">
   <h1><%= gettext "Welcome to %{name}!", name: "Parear" %></h1>
-  <p>A Reactive pair stairs with reminders.</p>
+  <p><%= gettext "A Reactive pair stairs with reminders." %></p>
 </section>
+
+
+<%= if not Enum.empty?(@recent_stairs) do %>
+    <h2><%= gettext "Your recently visited stairs" %></h2>
+    <table>
+        <%= for stairs <- @recent_stairs do %>
+            <tr>
+                <td><%= link_to_stairs(@conn, stairs) %></td>
+            </tr>
+        <% end %>
+    </table>
+<% end %>
+
+<div class="centralized">
+    <%= create_stairs_button(@conn) %>
+</div>
