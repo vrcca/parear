@@ -1,19 +1,6 @@
-<%= return_to_stairs_button(@conn) %>
+<p><%= return_to_stairs_button(@conn) %></p>
 <h1><%= gettext("Participants") %></h1>
 
-<table>
-    <thead>
-        <tr>
-            <td>Name</td>
-            <td>Actions</td>
-        </tr>
-    </thead>
-    <tbody>
-        <%= for {id, participant} <- @participants do %>
-            <tr>
-                <td><%= participant.name %></td>
-                <td><%= remove_participant_button(@conn, id) %></td>
-        </tr>
-        <% end %>
-    </tbody>
-</table>
+<%= render("_list.html", conn: @conn, participants: @participants) %>
+<%= render("_new.html", conn: @conn) %>
+

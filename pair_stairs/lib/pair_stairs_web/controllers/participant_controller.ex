@@ -19,6 +19,18 @@ defmodule PairStairsWeb.ParticipantController do
 
     conn
     |> put_flash(:info, gettext("Participant removed with success."))
-    |> redirect(to: Routes.stairs_participant_path(conn, :index, stairs_id))
+    |> redirect_to_index(stairs_id)
+  end
+
+  def create(conn, %{"stairs_id" => stairs, "participant" => participant}) do
+    stairs |> Parear.add_participant(participant["name"])
+
+    conn
+    |> put_flash(:info, gettext("Participant added with success!"))
+    |> redirect_to_index(stairs)
+  end
+
+  defp redirect_to_index(conn, stairs_id) do
+    redirect(conn, to: Routes.stairs_participant_path(conn, :index, stairs_id))
   end
 end

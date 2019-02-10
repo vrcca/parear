@@ -3,17 +3,6 @@
     <span>(<%= gettext("Limit") %>: <%= @stairs.limit %>)</span>
 </div>
 
-<label>Counts:</label>
-<ol>
-    <%= for {id, friends} <- @stairs.statuses,
-    {friend_id, total} <- friends do %>
-        <% name =  @stairs |> name_by_id(id)
-        friend_name = @stairs |> name_by_id(friend_id)  %>
-        <li id="<%= id%>"><%= name %>-<%=friend_name%>: <%=total%></li>
-    <% end %>
-</ol>
-
-
 <h2><%= gettext("Stairs") %></h2>
 
 <div class="container">

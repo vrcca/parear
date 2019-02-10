@@ -1,0 +1,16 @@
+<table>
+    <thead>
+        <tr>
+            <th><%= gettext("Name") %></th>
+            <th class="actions"><%= gettext("Actions") %></th>
+        </tr>
+    </thead>
+    <tbody>
+        <%= for {id, participant} <- @participants do %>
+            <tr>
+                <td><%= participant.name %></td>
+                <td><%= remove_participant_button(@conn, id) %></td>
+            </tr>
+        <% end %>
+    </tbody>
+</table>
