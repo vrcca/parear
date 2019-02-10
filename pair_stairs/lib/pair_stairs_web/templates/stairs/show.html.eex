@@ -31,5 +31,3 @@
         <% end %>
     </div>
 </div>
-
-<%= manage_participants_button(@conn, @stairs.id) %>
