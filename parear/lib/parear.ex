@@ -39,10 +39,21 @@ defmodule Parear do
   end
 
   def list(stairs) do
-    GenServer.call(from_registry(stairs), {:list})
+    stairs
+    |> ensure_running()
+    |> GenServer.call({:list})
   end
 
   defp from_registry(stairs_id) do
     {:via, Registry, {Registry.Stairs, stairs_id}}
+  end
+
+  defp ensure_running(stairs) do
+    Registry.lookup(Registry.Stairs, stairs)
+    |> case do
+      [] -> reload_by_id(stairs)
+      _pid_found -> stairs
+    end
+    |> from_registry()
   end
 end

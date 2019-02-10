@@ -36,6 +36,17 @@ defmodule ParearTest do
     assert reloaded_stairs == new_stairs
   end
 
+  test "Restarts process from repository by id" do
+    new_stairs =
+      Stairs.new("No process stairs")
+      |> Repository.save()
+
+    {:ok, reloaded_stairs} = Parear.list(new_stairs.id)
+
+    assert reloaded_stairs != nil
+    assert reloaded_stairs == new_stairs
+  end
+
   test "Returns same stairs process if it already has one", %{stairs_id: stairs_id} do
     {:ok, stairs} = Parear.list(stairs_id)
     reloaded_stairs_id = Parear.reload_by_id(stairs.id)
