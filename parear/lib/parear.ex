@@ -35,7 +35,9 @@ defmodule Parear do
   end
 
   def remove_participant_by_id(stairs, id) do
-    GenServer.call(from_registry(stairs), {:remove_participant_by_id, id})
+    stairs
+    |> ensure_running()
+    |> GenServer.call({:remove_participant_by_id, id})
   end
 
   def list(stairs) do
@@ -51,7 +53,7 @@ defmodule Parear do
   defp ensure_running(stairs) do
     Registry.lookup(Registry.Stairs, stairs)
     |> case do
-      [] -> reload_by_id(stairs)
+      _no_pid_found = [] -> reload_by_id(stairs)
       _pid_found -> stairs
     end
     |> from_registry()

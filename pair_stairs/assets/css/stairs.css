@@ -11,12 +11,12 @@
     text-align: center;
 }
 .container.column {
-    width: 2em;
+    width: 2rem;
 }
 .stairs.container {
     text-align: center;
     vertical-align: middle;
-    line-height: 3em;
+    line-height: 3rem;
 }
 .stairs-limit {
     float: right;
@@ -24,4 +24,7 @@
 .stairs.container button {
     padding-left: 1rem;
     padding-right: 1rem;
+}
+.stairs.container span.total {
+    padding: 0 1rem 0 1rem;
 }

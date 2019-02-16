@@ -15,7 +15,7 @@
             <li><%= new_stairs_button(@conn) %></li>
           </ul>
         </nav>
-        Parear
+        <%= link("Parear", to: Routes.page_path(@conn, :index)) %>
       </section>
     </header>
     <main role="main" class="container">
