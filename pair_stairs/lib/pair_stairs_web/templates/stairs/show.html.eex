@@ -12,9 +12,9 @@
             </div>
             <%= for {friend_id, _friend} <- @stairs.participants  do %>
                 <div class="column">
-                    <span>&lt;</span>
-                    <span><%= @stairs |> statuses_for(id, friend_id) %></span>
-                    <span>&gt;</span>
+                    <button class="button-outline">&lt;</button>
+                    <span class="total"><%= @stairs |> statuses_for(id, friend_id) %></span>
+                    <button class="button-outline">&gt;</button>
                 </div>
             <% end %>
         </div>

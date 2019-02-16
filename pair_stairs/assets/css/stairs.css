@@ -21,3 +21,7 @@
 .stairs-limit {
     float: right;
 }
+.stairs.container button {
+    padding-left: 1rem;
+    padding-right: 1rem;
+}

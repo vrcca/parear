@@ -21,3 +21,5 @@ test-pair-stairs:
 run-text-client:
 	$(MAKE) start-db; cd text_client; mix start; cd -
 
+run:
+	cd pair_stairs; mix phx.server; cd -
