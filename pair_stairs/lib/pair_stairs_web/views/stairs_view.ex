@@ -2,8 +2,8 @@ defmodule PairStairsWeb.StairsView do
   use PairStairsWeb, :view
   alias Parear.Stairs
 
-  def name_by_id(%Stairs{participants: participants}, id) do
-    participants[id].name
+  def statuses_for(%Stairs{statuses: statuses}, id, friend_id) do
+    get_in(statuses, [id, friend_id]) || 0
   end
 
   def manage_participants_button(conn, stairs_id) do

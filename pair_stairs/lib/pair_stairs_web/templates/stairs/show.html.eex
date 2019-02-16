@@ -1,32 +1,30 @@
-<div class="stairs-profile">
-    <h1><%= @stairs.name %></h1>
-    <span>(<%= gettext("Limit") %>: <%= @stairs.limit %>)</span>
+<div>
+    <div class="stairs-profile float-left">
+        <h1><%= @stairs.name %></h1>
+    </div>
+    <div class="stairs-limit"><%= gettext("Limit") %>: <%= @stairs.limit %></div>
 </div>
-
-<h2><%= gettext("Stairs") %></h2>
-
-<div class="container">
-    <%= for {id, friends} <- @stairs.statuses do %>
+<div class="stairs container">
+    <%= for {id, participant} <- @stairs.participants do %>
         <div class="row">
             <div class="column pair-name">
-                <%= @stairs |> name_by_id(id) %>
+                <%= participant.name %>
             </div>
-            <%= for {_friend_id, total} <- friends do %>
+            <%= for {friend_id, _friend} <- @stairs.participants  do %>
                 <div class="column">
-                    <span"><%= total %></span>
+                    <span>&lt;</span>
+                    <span><%= @stairs |> statuses_for(id, friend_id) %></span>
+                    <span>&gt;</span>
                 </div>
             <% end %>
-            <div class="column">
-                <span">0</span>
-            </div>
         </div>
     <% end %>
     <div class="row">
         <div class="column">
         </div>
-        <%= for {id, _friends} <- @stairs.statuses do %>
+        <%= for {_id, participant} <- @stairs.participants do %>
             <div class="column pair-name">
-                <%= @stairs |> name_by_id(id) %>
+                <%= participant.name %>
             </div>
         <% end %>
     </div>

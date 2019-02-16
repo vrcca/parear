@@ -1,6 +1,6 @@
 .pair-name {
-    background-color: silver;
-}
+    font-weight: 600;
+} 
 .unpairable {
     color: silver;
 }
@@ -9,4 +9,15 @@
 }
 .centralized {
     text-align: center;
+}
+.container.column {
+    width: 2em;
+}
+.stairs.container {
+    text-align: center;
+    vertical-align: middle;
+    line-height: 3em;
+}
+.stairs-limit {
+    float: right;
 }
