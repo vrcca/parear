@@ -49,7 +49,7 @@ defmodule Parear.Validations do
     current_total = Map.get(statuses, another_id) || 0
 
     cond do
-      current_total == limit ->
+      current_total >= limit ->
         {:error, "maximum_limit_reached"}
 
       true ->
