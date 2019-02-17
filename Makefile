@@ -23,3 +23,6 @@ run-text-client:
 
 run:
 	cd pair_stairs; mix phx.server; cd -
+
+format-pair-stairs:
+	cd pair_stairs; mix format; cd -

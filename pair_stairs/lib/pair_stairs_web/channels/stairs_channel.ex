@@ -19,7 +19,7 @@ defmodule PairStairsWeb.StairsChannel do
     id = socket.assigns[:stairs_id]
     Parear.pair(id, participant, friend)
     {:ok, stairs} = Parear.list(id)
-    push(socket, "stairs", convert_to_map(stairs))
+    broadcast!(socket, "stairs", convert_to_map(stairs))
     {:noreply, socket}
   end
 
@@ -27,7 +27,7 @@ defmodule PairStairsWeb.StairsChannel do
     id = socket.assigns[:stairs_id]
     Parear.unpair(id, participant, friend)
     {:ok, stairs} = Parear.list(id)
-    push(socket, "stairs", convert_to_map(stairs))
+    broadcast!(socket, "stairs", convert_to_map(stairs))
     {:noreply, socket}
   end
 

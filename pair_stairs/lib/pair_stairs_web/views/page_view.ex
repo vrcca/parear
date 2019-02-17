@@ -6,6 +6,9 @@ defmodule PairStairsWeb.PageView do
   end
 
   def create_stairs_button(conn) do
-    link(gettext("Create Stairs"), to: Routes.stairs_path(conn, :new), class: "button")
+    link(gettext("Create Stairs"),
+      to: Routes.stairs_path(conn, :new),
+      class: "button"
+    )
   end
 end

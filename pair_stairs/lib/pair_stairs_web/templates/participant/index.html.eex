@@ -1,6 +1,8 @@
 <p><%= return_to_stairs_button(@conn) %></p>
 <h1><%= gettext("Participants") %></h1>
 
-<%= render("_list.html", conn: @conn, participants: @participants) %>
+<%= if Enum.empty?(@participants) == false do %>
+    <%= render("_list.html", conn: @conn, participants: @participants) %>
+<% end %>
 <%= render("_new.html", conn: @conn) %>
 

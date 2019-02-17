@@ -8,7 +8,8 @@ defmodule PairStairsWeb.StairsView do
 
   def manage_participants_button(conn, stairs_id) do
     link(gettext("Manage Participants"),
-      to: Routes.stairs_participant_path(conn, :index, stairs_id)
+      to: Routes.stairs_participant_path(conn, :index, stairs_id),
+      class: "button"
     )
   end
 end

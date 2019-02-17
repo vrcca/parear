@@ -5,23 +5,32 @@
     <div class="stairs-limit"><%= gettext("Limit") %>: <%= @stairs.limit %></div>
 </div>
 
+
 <div id="pair-stairs" data-stairs-id="<%= @stairs.id %>" class="stairs container">
-    <div class="row" v-for="participant in stairs.participants" :key="participant.id">
-        <div class="column pair-name">
-            {{participant.name}}
+    <template v-show="stairs.participants.length >= 2">
+        <div class="row" v-for="participant in stairs.participants" :key="participant.id">
+            <div class="column pair-name">
+                {{participant.name}}
+            </div>
+            <div class="column" v-for="friend in stairs.participants">
+                <button class="button-clear" @click="unpair(participant, friend)">&lt;</button>
+                <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
+                <button class="button-clear" @click="pair(participant, friend)">&gt;</button>
+            </div>
         </div>
-        <div class="column" v-for="friend in stairs.participants">
-            <button class="button-clear" @click="unpair(participant, friend)">&lt;</button>
-            <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
-            <button class="button-clear" @click="pair(participant, friend)">&gt;</button>
+        
+        <div class="row">
+            <div class="column">
+            </div>
+            <div class="column pair-name" v-for="participant in stairs.participants">
+                {{participant.name}}
+            </div>
         </div>
-    </div>
-    
-    <div class="row">
-        <div class="column">
-        </div>
-        <div class="column pair-name" v-for="participant in stairs.participants">
-            {{participant.name}}
-        </div>
-    </div>
+    </template>
+
+<%= if Enum.count(@stairs.participants) < 2 do %>
+        <p><%= gettext("You still did not add enough friends here! :(") %></p>
+        <p><%= gettext("Let's fix it:") %></p>
+        <%= @conn |> manage_participants_button(@stairs.id) %>
+<% end %>
 </div>
