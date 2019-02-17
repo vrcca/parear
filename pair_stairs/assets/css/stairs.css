@@ -10,34 +10,64 @@
 .centralized {
     text-align: center;
 }
-.container.column {
-    width: 2rem;
+.stairs td, th {
+    padding: 0;
 }
-.stairs.container {
+.stairs table {
     text-align: center;
     vertical-align: middle;
     line-height: 3rem;
+    overflow: hidden;
 }
 .stairs-limit {
     float: right;
 }
-.stairs.container button {
+.stairs button {
     padding-left: 1rem;
     padding-right: 1rem;
 }
-.stairs.container span.total {
+.stairs span.total {
     padding: 0 1rem 0 1rem;
 }
-.stairs .row {
+.stairs tr {
     line-height: 5rem;
 }
-.stairs .row .column {
+.stairs tr td {
     border-bottom: 1px dotted silver;
     border-left: 1px dotted silver;
+    text-align: center;
 }
-.stairs .row .column:first-child {
+.stairs tr td:first-child {
     border-left: 0;
 }
-.stairs .row:last-child .column {
+.stairs tfoot tr th {
     border-bottom: 0;
+    border-left: 1px dotted silver;
+    text-align: center;
+}
+.stairs tfoot tr th:first-child {
+    border-left: 0;
+}
+.stairs tr:hover {
+    background-color: #ffa;
+}
+.stairs td, .stairs th {
+  position: relative;
+}
+.stairs td:hover::after,
+.stairs th:hover::after {
+  content: "";
+  position: absolute;
+  background-color: #ffa;
+  left: 0;
+  top: -5000px;
+  height: 10000px;
+  width: 100%;
+  z-index: -1;
+}
+table {
+  overflow: hidden;
+}
+.full-page-container {
+    max-width: 100%;
 }

@@ -12,4 +12,8 @@ defmodule PairStairsWeb.StairsView do
       class: "button"
     )
   end
+
+  def display_stairs_class(conn) do
+    "full-page-container"
+  end
 end

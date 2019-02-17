@@ -5,6 +5,14 @@ defmodule PairStairsWeb.LayoutView do
     top_page_button(conn, conn.params)
   end
 
+  def display_stairs_class(conn, view_module) do
+    function_exported?(view_module, :display_stairs_class, 1)
+    |> case do
+         true -> apply(view_module, :display_stairs_class, [conn])
+         _ -> ""
+    end
+  end
+
   defp top_page_button(conn, %{"id" => id}) do
     top_page_button(conn, %{"stairs_id" => id})
   end
