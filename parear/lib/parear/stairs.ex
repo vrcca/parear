@@ -64,7 +64,6 @@ defmodule Parear.Stairs do
       |> Enum.find({:not_found, nil}, fn {id, _status} ->
         searched == id
       end)
-
     status
   end
 
@@ -189,12 +188,22 @@ defmodule Parear.Stairs do
          fun
        ) do
     statuses = statuses_for_participant(stairs, participant)
-    current_value = statuses[another_id]
+    current_value = statuses[another_id] || 0
     updated_value = fun.(current_value)
 
     stairs
+    |> create_statuses_if_not_exists(id)
+    |> create_statuses_if_not_exists(another_id)
     |> update_in([:statuses, id, another_id], fn _ -> updated_value end)
     |> update_in([:statuses, another_id, id], fn _ -> updated_value end)
+  end
+
+  defp create_statuses_if_not_exists(stairs = %Stairs{statuses: statuses}, id) do
+    statuses[id]
+    |> case do
+         nil -> stairs |> update_in([:statuses, id], fn _ -> %{} end)
+         _ -> stairs
+       end
   end
 
   defp remove(stairs, %Participant{id: id}) do

@@ -45,8 +45,8 @@ defmodule Parear.Validations do
         %Participant{id: another_id},
         :pair_limit
       ) do
-    statuses = Stairs.statuses_for_participant(stairs, participant)
-    current_total = Map.get(statuses, another_id)
+    statuses = Stairs.statuses_for_participant(stairs, participant) || %{}
+    current_total = Map.get(statuses, another_id) || 0
 
     cond do
       current_total == limit ->

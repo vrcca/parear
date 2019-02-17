@@ -1,7 +1,7 @@
 defmodule Parear.StairsTest do
   use ExUnit.Case
   doctest Parear.Stairs
-  alias Parear.Stairs
+  alias Parear.{Stairs, Participant}
 
   setup do
     %{simple_stairs: stairs_with_two_participants()}
@@ -169,6 +169,21 @@ defmodule Parear.StairsTest do
       |> Stairs.add_participant("Vitor")
 
     assert %{} == stairs.statuses
+  end
+
+  test "Should assume total 0 when there is no statuses" do
+    vitor = Participant.new("Vitor")
+    kenya = Participant.new("Kenya")
+    stairs = %Stairs{id: "abc",
+                     name: "Whiskey",
+                     participants: %{
+                       vitor.id => vitor,
+                       kenya.id => kenya
+                     },
+                     statuses: %{}}
+
+    {:ok, updated_stairs} = stairs |> Stairs.pair("Vitor", "Kenya")
+    assert updated_stairs.statuses == %{vitor.id => %{kenya.id => 1}, kenya.id => %{vitor.id => 1}}
   end
 
   defp stairs_with_two_participants() do
