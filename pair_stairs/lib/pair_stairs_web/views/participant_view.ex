@@ -3,8 +3,7 @@ defmodule PairStairsWeb.ParticipantView do
 
   def return_to_stairs_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params
-    {:ok, stairs} = stairs_id |> Parear.list()
-    link(stairs.name, to: Routes.stairs_path(conn, :show, stairs_id))
+    link(gettext("Return"), to: Routes.stairs_path(conn, :show, stairs_id))
   end
 
   def remove_participant_button(conn, participant_id) do
