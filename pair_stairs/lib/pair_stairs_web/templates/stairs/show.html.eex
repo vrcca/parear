@@ -4,28 +4,24 @@
     </div>
     <div class="stairs-limit"><%= gettext("Limit") %>: <%= @stairs.limit %></div>
 </div>
-<div class="stairs container">
-    <%= for {id, participant} <- @stairs.participants do %>
-        <div class="row">
-            <div class="column pair-name">
-                <%= participant.name %>
-            </div>
-            <%= for {friend_id, _friend} <- @stairs.participants  do %>
-                <div class="column">
-                    <button class="button-outline">&lt;</button>
-                    <span class="total"><%= @stairs |> statuses_for(id, friend_id) %></span>
-                    <button class="button-outline">&gt;</button>
-                </div>
-            <% end %>
+
+<div id="pair-stairs" data-stairs-id="<%= @stairs.id %>" class="stairs container">
+    <div class="row" v-for="participant in stairs.participants" :key="participant.id">
+        <div class="column pair-name">
+            {{participant.name}}
         </div>
-    <% end %>
+        <div class="column" v-for="friend in stairs.participants">
+            <button class="button-outline">&lt;</button>
+            <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
+            <button class="button-outline">&gt;</button>
+        </div>
+    </div>
+    
     <div class="row">
         <div class="column">
         </div>
-        <%= for {_id, participant} <- @stairs.participants do %>
-            <div class="column pair-name">
-                <%= participant.name %>
-            </div>
-        <% end %>
+        <div class="column pair-name" v-for="participant in stairs.participants">
+            {{participant.name}}
+        </div>
     </div>
 </div>

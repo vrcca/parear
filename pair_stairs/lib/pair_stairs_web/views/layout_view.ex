@@ -10,7 +10,7 @@ defmodule PairStairsWeb.LayoutView do
   end
 
   defp top_page_button(conn, %{"stairs_id" => stairs_id}) do
-    link(gettext("Settings"), to: Routes.stairs_participant_path(conn, :index, stairs_id))
+    link(gettext("Preferences"), to: Routes.stairs_participant_path(conn, :index, stairs_id))
   end
 
   defp top_page_button(conn, _params) do
