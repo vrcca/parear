@@ -11,9 +11,9 @@
             {{participant.name}}
         </div>
         <div class="column" v-for="friend in stairs.participants">
-            <button class="button-outline">&lt;</button>
+            <button class="button-outline" @click="unpair(participant, friend)">&lt;</button>
             <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
-            <button class="button-outline">&gt;</button>
+            <button class="button-outline" @click="pair(participant, friend)">&gt;</button>
         </div>
     </div>
     

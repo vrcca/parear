@@ -26,43 +26,13 @@ defmodule PairStairsWeb.StairsControllerTest do
       assert response =~ "Whiskey"
     end
 
-    test "displays participants", %{conn: conn, stairs_id: id} do
-      participants =
-        ["Vitor", "Kenya"]
-        |> add_participants(id)
-
+    test "sets stairs id", %{conn: conn, stairs_id: id} do
       response =
         conn
         |> get(Routes.stairs_path(conn, :show, id))
         |> html_response(200)
 
-      for participant <- participants do
-        assert response =~ participant
-      end
+      assert response =~ "data-stairs-id=\"#{id}\""
     end
-
-    test "displays matching count", %{conn: conn, stairs_id: id} do
-      ["Vitor", "Kenya"]
-      |> add_participants(id)
-
-      for _i <- 1..37 do
-        Parear.pair(id, "Vitor", "Kenya")
-      end
-
-      response =
-        conn
-        |> get(Routes.stairs_path(conn, :show, id))
-        |> html_response(200)
-
-      assert response =~ "37"
-    end
-  end
-
-  defp add_participants(participants, stairs_id) do
-    for participant <- participants do
-      {:ok, _} = Parear.add_participant(stairs_id, participant)
-    end
-
-    participants
   end
 end

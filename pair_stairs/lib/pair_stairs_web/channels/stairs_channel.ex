@@ -15,6 +15,22 @@ defmodule PairStairsWeb.StairsChannel do
     {:noreply, socket}
   end
 
+  def handle_in("pair", %{"participant" => participant, "friend" => friend}, socket) do
+    id = socket.assigns[:stairs_id]
+    Parear.pair(id, participant, friend)
+    {:ok, stairs} = Parear.list(id)
+    push(socket, "stairs", convert_to_map(stairs))
+    {:noreply, socket}
+  end
+
+  def handle_in("unpair", %{"participant" => participant, "friend" => friend}, socket) do
+    id = socket.assigns[:stairs_id]
+    Parear.unpair(id, participant, friend)
+    {:ok, stairs} = Parear.list(id)
+    push(socket, "stairs", convert_to_map(stairs))
+    {:noreply, socket}
+  end
+
   defp convert_to_map(%Stairs{id: id, participants: participants, statuses: statuses}) do
     %{id: id, participants: convert_to_map(participants), statuses: statuses}
   end

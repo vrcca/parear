@@ -19,6 +19,12 @@ let view = function(server) {
                     return total;
                 }
                 return 0;
+            },
+            pair: function(participant, friend) {
+                server.pair(participant, friend)
+            },
+            unpair: function(participant, friend) {
+                server.unpair(participant, friend)
             }
         }
     })
