@@ -28,3 +28,16 @@
 .stairs.container span.total {
     padding: 0 1rem 0 1rem;
 }
+.stairs .row {
+    line-height: 5rem;
+}
+.stairs .row .column {
+    border-bottom: 1px dotted silver;
+    border-left: 1px dotted silver;
+}
+.stairs .row .column:first-child {
+    border-left: 0;
+}
+.stairs .row:last-child .column {
+    border-bottom: 0;
+}
