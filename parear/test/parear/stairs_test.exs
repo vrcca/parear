@@ -174,16 +174,23 @@ defmodule Parear.StairsTest do
   test "Should assume total 0 when there is no statuses" do
     vitor = Participant.new("Vitor")
     kenya = Participant.new("Kenya")
-    stairs = %Stairs{id: "abc",
-                     name: "Whiskey",
-                     participants: %{
-                       vitor.id => vitor,
-                       kenya.id => kenya
-                     },
-                     statuses: %{}}
+
+    stairs = %Stairs{
+      id: "abc",
+      name: "Whiskey",
+      participants: %{
+        vitor.id => vitor,
+        kenya.id => kenya
+      },
+      statuses: %{}
+    }
 
     {:ok, updated_stairs} = stairs |> Stairs.pair("Vitor", "Kenya")
-    assert updated_stairs.statuses == %{vitor.id => %{kenya.id => 1}, kenya.id => %{vitor.id => 1}}
+
+    assert updated_stairs.statuses == %{
+             vitor.id => %{kenya.id => 1},
+             kenya.id => %{vitor.id => 1}
+           }
   end
 
   defp stairs_with_two_participants() do
