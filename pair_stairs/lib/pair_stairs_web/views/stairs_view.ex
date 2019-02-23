@@ -13,7 +13,7 @@ defmodule PairStairsWeb.StairsView do
     )
   end
 
-  def display_stairs_class(conn) do
+  def display_stairs_class(_conn) do
     "full-page-container"
   end
 end

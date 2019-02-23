@@ -8,8 +8,8 @@ defmodule PairStairsWeb.LayoutView do
   def display_stairs_class(conn, view_module) do
     function_exported?(view_module, :display_stairs_class, 1)
     |> case do
-         true -> apply(view_module, :display_stairs_class, [conn])
-         _ -> ""
+      true -> apply(view_module, :display_stairs_class, [conn])
+      _ -> ""
     end
   end
 
