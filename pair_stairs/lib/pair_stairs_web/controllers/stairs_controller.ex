@@ -7,7 +7,7 @@ defmodule PairStairsWeb.StairsController do
   end
 
   def create(conn, %{"new_stairs" => %{"name" => name, "limit" => limit}}) do
-    with stairs_id <- Parear.new_stairs(name, limit: limit) do
+    with stairs_id <- Parear.new_stairs(name, limit: String.to_integer(limit)) do
       conn
       |> redirect(to: Routes.stairs_path(conn, :show, stairs_id))
     end
