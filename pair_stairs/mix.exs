@@ -40,7 +40,8 @@ defmodule PairStairs.MixProject do
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:parear, path: "../parear"},
-      {:repository, path: "../repository"}
+      {:repository, path: "../repository"},
+      {:distillery, "~> 2.0"}
     ]
   end
 end
