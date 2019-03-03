@@ -26,6 +26,7 @@ jobs:
             - v1-mix-cache-{{ .Branch }}
             - v1-mix-cache
       - run: mix local.hex --force
+      - run: mix local.rebar --force
       - run: mix do deps.get, compile
 
 workflows:
