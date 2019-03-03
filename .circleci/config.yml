@@ -20,6 +20,7 @@ jobs:
     steps:
       - restore_cache:
           key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+      - run: pwd && ls -la
       - run: cd repository  && mix deps.get && cd -
       - run: cd parear      && mix deps.get && cd -
       - run: cd pair_stairs && mix deps.get && cd -
