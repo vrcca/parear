@@ -4,6 +4,10 @@ defmodule Repository.MixProject do
   def project do
     [
       app: :repository,
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
       version: "0.1.0",
       elixir: "~> 1.7",
       start_permanent: Mix.env() == :prod,
@@ -20,7 +24,7 @@ defmodule Repository.MixProject do
 
   defp deps do
     [
-      {:parear, [path: "../parear"]},
+      {:parear, in_umbrella: true},
       {:ecto_sql, "~> 3.0"},
       {:postgrex, ">= 0.0.0"}
     ]

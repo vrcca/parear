@@ -6,6 +6,10 @@ defmodule PairStairs.MixProject do
       app: :pair_stairs,
       version: "0.1.0",
       elixir: "~> 1.5",
+      build_path: "../../_build",
+      config_path: "../../config/config.exs",
+      deps_path: "../../deps",
+      lockfile: "../../mix.lock",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -39,9 +43,8 @@ defmodule PairStairs.MixProject do
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
-      {:parear, path: "../parear"},
-      {:repository, path: "../repository"},
-      {:distillery, "~> 2.0"}
+      {:parear, in_umbrella: true},
+      {:repository, in_umbrella: true}
     ]
   end
 end

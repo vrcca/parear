@@ -71,7 +71,8 @@ defmodule ParearTest do
   end
 
   test "Fails to start when reloading an unknown stair by id" do
-    {:error, reason} = Parear.reload_by_id("unknown-id")
+    unknown_id = "31b755c8-701d-4406-9eba-9a4fbbb6fec2"
+    {:error, reason} = Parear.reload_by_id(unknown_id)
     assert reason == :stairs_could_not_be_found
   end
 

@@ -31,13 +31,13 @@ environment :dev do
   # dev mode.
   set dev_mode: true
   set include_erts: false
-  set cookie: :"J2TT,HS63,;]Eu$!Oy}a1QJVoTF:&^oUMzeXjw59^Gdxhq<l&H!0iL4l4<]Ez`<P"
+  set cookie: :"cP_z$3bkamY!{AJT<k!S6tjm[c;!~@p{V9`kUdNxi^PH(67mJS:HH[BInN0c{O`T"
 end
 
 environment :prod do
   set include_erts: true
   set include_src: false
-  set cookie: :"8`Dj&RxF[X<)^9&&hnE:fH`*z.%fJ8>mK&EF^H4?pNv?GV=FY^6L}%]hZ4IP5O(3"
+  set cookie: :"f{}0q0w3vA(G?1jM{|^e/,eb91/`5JZiDp/KY;:t?jBd<pobZ);!Osv<:M:n3/29"
   set vm_args: "rel/vm.args"
 end
 
@@ -46,10 +46,13 @@ end
 # when running `mix release`, the first release in the file
 # will be used by default
 
-release :pair_stairs do
-  set version: current_version(:pair_stairs)
+release :parear do
+  set version: "0.1.0"
   set applications: [
-    :runtime_tools
+    :runtime_tools,
+    pair_stairs: :permanent,
+    parear: :permanent,
+    repository: :permanent
   ]
 end
 
