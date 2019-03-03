@@ -38,11 +38,11 @@ window.onload = function() {
     let stairs = {
         id: stairs_id_from(root),
         participants: {
-            "a": {"id": "a", "name": ""},
-            "b": {"id": "b", "name": ""},
-            "c": {"id": "c", "name": ""},
-            "d": {"id": "d", "name": ""},
-            "e": {"id": "e", "name": ""}
+            "a": {"id": "a", "name": "Loading..."},
+            "b": {"id": "b", "name": "Loading..."},
+            "c": {"id": "c", "name": "Loading..."},
+            "d": {"id": "d", "name": "Loading..."},
+            "e": {"id": "e", "name": "Loading..."}
         },
         statuses: {
         }
