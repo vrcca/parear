@@ -17,13 +17,6 @@ config :pair_stairs, PairStairsWeb.Endpoint,
   url: [host: "${APP_NAME}.gigalixirapp.com", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json"
 
-config :repository, Repository.Parear.Repo,
-  adapter: Ecto.Adapters.Postgres,
-  url: "${DATABASE_URL}",
-  database: "",
-  ssl: true,
-  pool_size: 2
-
 # Do not print debug messages in production
 config :logger, level: :info
 
