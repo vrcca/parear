@@ -23,6 +23,6 @@ workflows:
   build-and-test:
     jobs:
       - checkout_code
-      - retrieve_dependencies
-         requires:
-           - checkout_code
+      - retrieve_dependencies:
+          requires:
+            - checkout_code
