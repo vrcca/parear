@@ -1,0 +1,28 @@
+version: 2
+jobs:
+  checkout_code:
+    docker:
+      - image: circleci/elixir:1.8
+      - image: circleci/postgres:9.4.12-alpine
+    working_directory: ~/parear
+    steps:
+      - checkout
+
+  retrieve_dependencies:
+    docker:
+      - image: circleci/elixir:1.8
+      - image: circleci/postgres:9.4.12-alpine
+    working_directory: ~/parear
+    steps:
+      - run: cd repository  && mix deps.get && cd -
+      - run: cd parear      && mix deps.get && cd -
+      - run: cd pair_stairs && mix deps.get && cd -
+
+workflows:
+  version: 2
+  build-and-test:
+    jobs:
+      - checkout_code
+      - retrieve_dependencies
+         requires:
+           - checkout_code
