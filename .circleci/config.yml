@@ -8,7 +8,7 @@ jobs:
     steps:
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/parear
 
@@ -19,11 +19,16 @@ jobs:
     working_directory: ~/parear
     steps:
       - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run: pwd && ls -la
-      - run: cd repository  && mix deps.get && cd -
-      - run: cd parear      && mix deps.get && cd -
-      - run: cd pair_stairs && mix deps.get && cd -
+          key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
+      - restore_cache:
+          keys:
+            - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
+            - v1-mix-cache-{{ .Branch }}
+            - v1-mix-cache
+      - run: mix local.hex --force
+      - run: cd repository  && mix do deps.get, compile && cd -
+      - run: cd parear      && mix do deps.get, compile && cd -
+      - run: cd pair_stairs && mix do deps.get, compile && cd -
 
 workflows:
   version: 2
