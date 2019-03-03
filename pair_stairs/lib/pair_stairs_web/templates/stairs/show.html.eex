@@ -5,19 +5,18 @@
     <div class="stairs-limit"><%= gettext("Limit") %>: <%= @stairs.limit %></div>
 </div>
 
-
 <table id="pair-stairs" data-stairs-id="<%= @stairs.id %>" class="stairs">
     <tbody>
-    <tr v-for="(participant, id, row_index) in stairs.participants" :key="participant.id">
-        <td class="pair-name">{{participant.name}}</td>
-        <td v-for="(friend, friend_id, col_index) in stairs.participants">
-            <template v-if="row_index >= col_index">
-            <button class="button-clear" @click="unpair(participant, friend)">&lt;</button>
-            <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
-            <button class="button-clear" @click="pair(participant, friend)">&gt;</button>
-            </template>
-        </td>
-    </tr>
+        <tr v-for="(participant, id, row_index) in stairs.participants" :key="participant.id">
+            <td class="pair-name">{{participant.name}}</td>
+            <td v-for="(friend, friend_id, col_index) in stairs.participants">
+                <template v-if="row_index >= col_index">
+                    <button class="button-clear" @click="unpair(participant, friend)">&lt;</button>
+                    <span class="total">{{ statuses_for(participant.id, friend.id) }}</span>
+                    <button class="button-clear" @click="pair(participant, friend)">&gt;</button>
+                </template>
+            </td>
+        </tr>
     </tbody>
     <tfoot>
         <tr>

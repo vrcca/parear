@@ -37,8 +37,13 @@ window.onload = function() {
     }
     let stairs = {
         id: stairs_id_from(root),
-        participants: [
-        ],
+        participants: {
+            "a": {"id": "a", "name": ""},
+            "b": {"id": "b", "name": ""},
+            "c": {"id": "c", "name": ""},
+            "d": {"id": "d", "name": ""},
+            "e": {"id": "e", "name": ""}
+        },
         statuses: {
         }
     }
@@ -47,6 +52,6 @@ window.onload = function() {
     server.connect()
 }
 
-let stairs_id_from = function(root) {
-    return root.getAttribute('data-stairs-id');
+let stairs_id_from = function(element) {
+    return element.getAttribute('data-stairs-id');
 }
