@@ -3,10 +3,14 @@ jobs:
   checkout_code:
     docker:
       - image: circleci/elixir:1.8
-      - image: circleci/postgres:9.4.12-alpine
+      - image: circleci/postgres:9.4.12
     working_directory: ~/parear
     steps:
       - checkout
+      - save_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
+          paths:
+            - ~/circleci-demo-workflows
 
   retrieve_dependencies:
     docker:
@@ -14,6 +18,8 @@ jobs:
       - image: circleci/postgres:9.4.12-alpine
     working_directory: ~/parear
     steps:
+      - restore_cache:
+          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
       - run: cd repository  && mix deps.get && cd -
       - run: cd parear      && mix deps.get && cd -
       - run: cd pair_stairs && mix deps.get && cd -
