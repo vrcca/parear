@@ -18,8 +18,9 @@ let connectionView = function(server, translations) {
             },
             connection_status: function() {
                 if (this.status.connected) {
+                    let self = this;
                     setTimeout(() => {
-                        this.connection.status = "hidden"
+                        self.connection.status = "hidden"
                     }, 3000);
                     return translations.connection_status.connected
                 } else if (this.status.disconnected) {

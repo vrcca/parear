@@ -32,7 +32,7 @@
          connection_status: {
              connected: <%= raw Jason.encode!(gettext("Connected")) %>,
              disconnected: <%= raw Jason.encode!(gettext("Disconnected")) %>,
-             connecting: <%= raw Jason.encode!(gettext("Connecting...")) %>
+             connecting: <%= raw Jason.encode!(gettext("Disconnected. Trying to reconnect...")) %>
          },
          loading: <%= raw Jason.encode!(gettext("Loading...")) %>
      }
