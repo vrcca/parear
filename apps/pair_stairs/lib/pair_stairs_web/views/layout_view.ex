@@ -27,7 +27,7 @@ defmodule PairStairsWeb.LayoutView do
 
   def is_stairs_page(conn) do
     with %{"id" => id} <- conn.params,
-      current_path <- "/" <> Enum.join(conn.path_info, "/") do
+         current_path <- "/" <> Enum.join(conn.path_info, "/") do
       current_path == Routes.stairs_path(conn, :show, id)
     else
       _ -> false

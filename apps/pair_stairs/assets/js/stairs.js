@@ -21,7 +21,7 @@ let connectionView = function(server, translations) {
                     let self = this;
                     setTimeout(() => {
                         self.connection.status = "hidden"
-                    }, 3000);
+                    }, 1000);
                     return translations.connection_status.connected
                 } else if (this.status.disconnected) {
                     return translations.connection_status.disconnected

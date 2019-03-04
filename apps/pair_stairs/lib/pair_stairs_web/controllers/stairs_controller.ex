@@ -14,9 +14,7 @@ defmodule PairStairsWeb.StairsController do
   end
 
   def show(conn, %{"id" => id}) do
-    {:ok, stairs} =
-      Parear.reload_by_id(id)
-      |> Parear.list()
+    {:ok, stairs} = Parear.list(id)
 
     conn
     |> save_to_recently_visited_stairs(stairs)

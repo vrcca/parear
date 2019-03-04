@@ -13,7 +13,13 @@ defmodule PairStairsWeb.StairsView do
     )
   end
 
-  def display_stairs_class(_conn) do
-    "full-page-container"
+  def display_stairs_class(conn) do
+    with %{"id" => id} <- conn.params,
+         {:ok, stairs} <- Parear.list(id),
+         true <- Enum.count(stairs.participants) >= 6 do
+      "full-page-container"
+    else
+      _ -> ""
+    end
   end
 end
