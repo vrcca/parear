@@ -31,6 +31,10 @@ export default class StairsServer {
                 console.log("Disconnected. Trying to reconnect...")
                 this.connection.status = "connecting"
             })
+            .onError(() => {
+                console.log("there was an error with the connection!")
+                this.connection.status = "disconnected"
+            })
     }
 
     setup_channel() {
@@ -38,6 +42,8 @@ export default class StairsServer {
         this.channel.on("stairs", (stairs) => {
             this.copy_stairs(stairs)
         })
+        channel.onError(() => console.log("there was an error!") )
+        channel.onClose(() => console.log("the channel has gone away gracefully") )
     }
 
     fetch_stairs() {
