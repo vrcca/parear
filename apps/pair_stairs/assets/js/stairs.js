@@ -21,10 +21,10 @@ let view = function(server) {
                 return 0;
             },
             pair: function(participant, friend) {
-                server.pair(participant, friend)
+                server.pair(participant.name, friend.name)
             },
             unpair: function(participant, friend) {
-                server.unpair(participant, friend)
+                server.unpair(participant.name, friend.name)
             }
         }
     })

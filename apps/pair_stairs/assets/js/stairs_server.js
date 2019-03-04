@@ -41,15 +41,15 @@ export default class StairsServer {
 
     pair(participant, friend) {
         this.channel.push("pair", {
-            participant: participant.name,
-            friend: friend.name
+            participant: participant,
+            friend: friend
         })
     }
 
     unpair(participant, friend) {
         this.channel.push("unpair", {
-            participant: participant.name,
-            friend: friend.name
+            participant: participant,
+            friend: friend
         })
     }
 }

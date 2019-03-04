@@ -32,12 +32,13 @@ defmodule PairStairsWeb.StairsChannel do
   end
 
   defp convert_to_map(%Stairs{id: id, participants: participants, statuses: statuses}) do
-    %{id: id, participants: convert_to_map(participants), statuses: statuses}
+    %{id: id, participants: convert_to_list(participants), statuses: statuses}
   end
 
-  defp convert_to_map(participants = %{}) do
-    Enum.reduce(participants, %{}, fn {id, p}, acc ->
-      Map.put(acc, id, Map.from_struct(p))
+  defp convert_to_list(participants = %{}) do
+    Enum.reduce(participants, [], fn {_id, p}, acc ->
+      [Map.from_struct(p) | acc]
     end)
+    |> Enum.sort(&(&1.name <= &2.name))
   end
 end
