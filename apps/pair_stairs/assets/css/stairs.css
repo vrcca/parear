@@ -71,3 +71,29 @@ table {
 .full-page-container {
     max-width: 100%;
 }
+
+#connection-status {
+    text-align: center;
+    float: left;
+    width: 100%;
+}
+#connection-status span {
+    padding: 0.4em 1em 0.4em 1em;
+    font-size: 0.7em;
+    font-weight: 600;
+}
+#connection-status span.disconnected {
+    background: #f50d0d;
+    color: #fff;
+}
+#connection-status span.connecting {
+    background: #ffa;
+    color: #000;
+}
+#connection-status span.connected {
+    background: green;
+    color: #fff;
+}
+#connection-status span.hidden {
+    display: none;
+}
