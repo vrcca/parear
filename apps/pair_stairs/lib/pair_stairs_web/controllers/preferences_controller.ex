@@ -1,8 +1,8 @@
 defmodule PairStairsWeb.PreferencesController do
   use PairStairsWeb, :controller
 
-  def index(conn, %{"stairs_id" => stairs_id}) do
+  def index(conn, _params) do
     conn
-    |> redirect(to: Routes.stairs_participant_path(conn, :index, stairs_id))
+    |> render("index.html")
   end
 end

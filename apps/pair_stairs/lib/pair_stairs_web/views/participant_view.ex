@@ -1,9 +1,9 @@
 defmodule PairStairsWeb.ParticipantView do
   use PairStairsWeb, :view
 
-  def return_to_stairs_button(conn) do
+  def return_to_preferences_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params
-    link(gettext("Return"), to: Routes.stairs_path(conn, :show, stairs_id))
+    link(gettext("Preferences"), to: Routes.stairs_preferences_path(conn, :index, stairs_id))
   end
 
   def remove_participant_button(conn, participant_id) do

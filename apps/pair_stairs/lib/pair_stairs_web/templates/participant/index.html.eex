@@ -1,4 +1,4 @@
-<p><%= return_to_stairs_button(@conn) %></p>
+<p><%= return_to_preferences_button(@conn) %></p>
 <h1><%= gettext("Participants") %></h1>
 
 <%= if Enum.empty?(@participants) == false do %>
