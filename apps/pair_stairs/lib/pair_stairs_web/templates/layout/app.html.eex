@@ -17,9 +17,11 @@
         </nav>
         <%= link("Parear", to: Routes.page_path(@conn, :index)) %>
       </section>
+      <%= if is_stairs_page(@conn) do %>
       <div id="connection-status">
           <span :class="status">{{connection_status}}</span>
       </div>
+      <% end %>
     </header>
     <main role="main" class="container <%= display_stairs_class(@conn, @view_module) %>">
         <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>

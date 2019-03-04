@@ -24,4 +24,13 @@ defmodule PairStairsWeb.LayoutView do
   defp top_page_button(conn, _params) do
     link(gettext("New"), to: Routes.stairs_path(conn, :new))
   end
+
+  def is_stairs_page(conn) do
+    with %{"id" => id} <- conn.params,
+      current_path <- "/" <> Enum.join(conn.path_info, "/") do
+      current_path == Routes.stairs_path(conn, :show, id)
+    else
+      _ -> false
+    end
+  end
 end
