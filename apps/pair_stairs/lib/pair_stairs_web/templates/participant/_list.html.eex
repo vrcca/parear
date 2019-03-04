@@ -6,10 +6,10 @@
         </tr>
     </thead>
     <tbody>
-        <%= for {id, participant} <- @participants do %>
+        <%= for participant <- sorted_list(@participants) do %>
             <tr>
                 <td><%= participant.name %></td>
-                <td><%= remove_participant_button(@conn, id) %></td>
+                <td><%= remove_participant_button(@conn, participant.id) %></td>
             </tr>
         <% end %>
     </tbody>

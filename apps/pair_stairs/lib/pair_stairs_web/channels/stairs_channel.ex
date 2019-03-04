@@ -1,6 +1,7 @@
 defmodule PairStairsWeb.StairsChannel do
   use Phoenix.Channel
 
+  alias PairStairsWeb.ParticipantView
   alias Parear.Stairs
 
   def join("stairs:" <> id, _message, socket) do
@@ -36,9 +37,6 @@ defmodule PairStairsWeb.StairsChannel do
   end
 
   defp convert_to_list(participants = %{}) do
-    Enum.reduce(participants, [], fn {_id, p}, acc ->
-      [Map.from_struct(p) | acc]
-    end)
-    |> Enum.sort(&(&1.name <= &2.name))
+    ParticipantView.sorted_list(participants)
   end
 end

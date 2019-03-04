@@ -15,4 +15,11 @@ defmodule PairStairsWeb.ParticipantView do
       data: [confirm: gettext("This action will remove any previous pair counts. Are you sure?")]
     )
   end
+
+  def sorted_list(participants = %{}) do
+    Enum.reduce(participants, [], fn {_id, p}, acc ->
+      [Map.from_struct(p) | acc]
+    end)
+    |> Enum.sort(&(&1.name <= &2.name))
+  end
 end
