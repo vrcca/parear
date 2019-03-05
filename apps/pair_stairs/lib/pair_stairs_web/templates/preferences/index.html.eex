@@ -1,4 +1,4 @@
 <p><%= return_to_stairs_button(@conn) %></p>
-<h1><%= gettext("Settings") %></h1>
+<h1><%= gettext("Preferences") %></h1>
 
 <%= manage_participants_button(@conn)  %>
