@@ -31,6 +31,7 @@ export default class StairsServer {
                 console.log("Disconnected. Trying to reconnect...")
                 this.connection.status = "connecting"
             })
+        this.socket
             .onError(() => {
                 console.log("there was an error with the connection!")
                 this.connection.status = "disconnected"
