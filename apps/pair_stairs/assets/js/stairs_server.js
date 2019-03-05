@@ -42,8 +42,8 @@ export default class StairsServer {
         this.channel.on("stairs", (stairs) => {
             this.copy_stairs(stairs)
         })
-        channel.onError(() => console.log("there was an error!") )
-        channel.onClose(() => console.log("the channel has gone away gracefully") )
+        this.channel.onError(() => console.log("there was an error!") )
+        this.channel.onClose(() => console.log("the channel has gone away gracefully") )
     }
 
     fetch_stairs() {
