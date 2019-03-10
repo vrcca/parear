@@ -5,8 +5,15 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Pair Matrix</title>
-    <link rel="shortcut icon" type="image/png" href="<%= Routes.static_path(@conn, "/favicon.ico") %>"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" href="/favicon.ico">
+    <link rel="manifest" href="<%= Routes.static_path(@conn, "/site.webmanifest") %>">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#6ed1f9">
     <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/app.css") %>"/>
+    <meta name="msapplication-TileColor" content="#603cba">
+    <meta name="theme-color" content="#ffffff">
   </head>
   <body>
     <header>
@@ -17,7 +24,7 @@
           </ul>
         </nav>
         <div class="app-name">
-            <img src="<%= Routes.static_path(@conn, "/favicon.ico") %>"/>
+            <img src="<%= Routes.static_path(@conn, "/favicon-32x32.png") %>"/>
             <%= link("Pair Matrix", to: Routes.page_path(@conn, :index)) %>
         </div>
       </section>
