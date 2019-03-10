@@ -1,3 +1,12 @@
+header div.app-name img {
+    width: 2em;
+    max-width: 2em;
+}
+header div.app-name a {
+    float: right;
+    margin-left: 0.5em;
+    line-height: 2em;
+}
 .pair-name {
     font-weight: 600;
 } 
