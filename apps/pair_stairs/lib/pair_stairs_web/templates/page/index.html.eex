@@ -1,6 +1,6 @@
 <section class="phx-hero">
-  <h1><%= gettext "Welcome to %{name}!", name: "Parear" %></h1>
-  <p><%= gettext "A Reactive pair stairs with reminders." %></p>
+  <h1><%= gettext "Welcome to %{name}!", name: "Pair Matrix" %></h1>
+  <p><%= gettext "A Reactive pair matrix with reminders." %></p>
 </section>
 
 
