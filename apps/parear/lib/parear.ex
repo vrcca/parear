@@ -56,8 +56,8 @@ defmodule Parear do
   defp ensure_running(stairs) do
     Registry.lookup(Registry.Stairs, stairs)
     |> case do
-         _no_pid_found = [] -> reload_by_id(stairs)
-         _pid_found -> stairs
-       end
+      _no_pid_found = [] -> reload_by_id(stairs)
+      _pid_found -> stairs
+    end
   end
 end

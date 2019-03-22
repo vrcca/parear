@@ -15,8 +15,9 @@ defmodule ParearTest do
     Parear.RepositoryMock
     |> expect(:save, fn stairs -> stairs end)
 
-    {:ok, stairs} = Parear.new_stairs("Whiskey", limit: 10)
-    |> Parear.list()
+    {:ok, stairs} =
+      Parear.new_stairs("Whiskey", limit: 10)
+      |> Parear.list()
 
     assert stairs.name == "Whiskey"
     assert stairs.limit == 10

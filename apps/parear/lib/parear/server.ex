@@ -3,7 +3,7 @@ defmodule Parear.Server do
 
   alias Parear.{Stairs, Participant, ParticipantRepository}
 
-  @repository Application.get_env(:parear, :repository)
+  defp repository(), do: Application.get_env(:parear, :repository)
 
   def start_link(stairs = %Stairs{id: id}) do
     name = {:via, Registry, {Registry.Stairs, id}}
@@ -26,7 +26,7 @@ defmodule Parear.Server do
 
   def handle_continue(:init_by_stairs_id, stairs_with_id = %Stairs{}) do
     stairs_with_id
-    |> @repository.find_by_id()
+    |> repository().find_by_id()
     |> case do
       {:none} ->
         {:stop, :stairs_could_not_be_found, stairs_with_id}
@@ -48,7 +48,7 @@ defmodule Parear.Server do
   def handle_call({:pair, participant, another}, _from, stairs) do
     with {:ok, updated_stairs} <- Stairs.pair(stairs, participant, another) do
       updated_stairs
-      |> @repository.save()
+      |> repository().save()
       |> handle_result(stairs)
     end
   end
@@ -56,14 +56,14 @@ defmodule Parear.Server do
   def handle_call({:unpair, participant, another}, _from, stairs) do
     with {:ok, updated_stairs} <- Stairs.unpair(stairs, participant, another) do
       updated_stairs
-      |> @repository.save()
+      |> repository().save()
       |> handle_result(stairs)
     end
   end
 
   def handle_call({:remove_participant, name}, _from, stairs) do
     Stairs.remove_participant(stairs, name)
-    |> @repository.save()
+    |> repository().save()
     |> reply_ok()
   end
 
@@ -71,19 +71,19 @@ defmodule Parear.Server do
     participant = stairs |> Stairs.find_participant_by_id(id)
 
     Stairs.remove_participant(stairs, participant)
-    |> @repository.save()
+    |> repository().save()
     |> reply_ok()
   end
 
   def handle_call({:save}, _from, stairs) do
     stairs
-    |> @repository.save()
+    |> repository().save()
     |> reply_ok()
   end
 
   def handle_call({:reset_counters}, _from, stairs) do
     Stairs.reset_all_counters(stairs)
-    |> @repository.save()
+    |> repository().save()
     |> reply_ok()
   end
 
