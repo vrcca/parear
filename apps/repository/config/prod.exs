@@ -6,3 +6,5 @@ config :repository, Repository.Parear.Repo,
   database: "",
   ssl: true,
   pool_size: 2
+
+config :parear, repository: Repository.ParearEctoImpl

@@ -37,25 +37,27 @@ defmodule Parear do
   def remove_participant_by_id(stairs, id) do
     stairs
     |> ensure_running()
+    |> from_registry()
     |> GenServer.call({:remove_participant_by_id, id})
   end
 
   def list(stairs) do
-    stairs
-    |> ensure_running()
-    |> GenServer.call({:list})
+    with pid when is_binary(pid) <- stairs |> ensure_running() do
+      pid
+      |> from_registry()
+      |> GenServer.call({:list})
+    end
   end
 
-  defp from_registry(stairs_id) do
+  defp from_registry(stairs_id) when is_binary(stairs_id) do
     {:via, Registry, {Registry.Stairs, stairs_id}}
   end
 
   defp ensure_running(stairs) do
     Registry.lookup(Registry.Stairs, stairs)
     |> case do
-      _no_pid_found = [] -> reload_by_id(stairs)
-      _pid_found -> stairs
-    end
-    |> from_registry()
+         _no_pid_found = [] -> reload_by_id(stairs)
+         _pid_found -> stairs
+       end
   end
 end
