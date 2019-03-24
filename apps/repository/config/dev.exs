@@ -7,4 +7,5 @@ config :repository, Repository.Parear.Repo,
   hostname: "localhost",
   port: "5432"
 
-config :parear, repository: Repository.ParearEctoImpl
+config :parear, repository: Repository.ParearEctoRepository
+config :parear, participant_repository: Repository.ParticipantEctoRepository

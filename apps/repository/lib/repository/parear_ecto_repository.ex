@@ -4,14 +4,8 @@ defmodule Repository.ParearEctoRepository do
   @behaviour Parear.Repository
 
   @impl Parear.Repository
-  def find_by_id(%Parear.Stairs{id: id}) do
+  def find_by_id(id) do
     Stair.find_by_id(id)
-    |> respond_to_find()
-  end
-
-  @impl Parear.Repository
-  def find_by_name(%Parear.Stairs{name: name}) do
-    Stair.find_by_name(name)
     |> respond_to_find()
   end
 

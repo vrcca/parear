@@ -34,7 +34,7 @@ defmodule Repository.Parear.Participant do
     Repo.get_by(Participant, %{id: id})
   end
 
-  def insert(participant = %Parear.Participant{}, %Parear.Stairs{id: stairs_id}) do
+  def insert(participant = %Parear.Participant{}, stairs_id) do
     %Participant{stair_id: stairs_id}
     |> changeset(Map.from_struct(participant))
     |> Repo.insert()

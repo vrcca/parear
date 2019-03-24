@@ -1,11 +1,11 @@
-defmodule Repository.ParticipantEctoImplTest do
+defmodule Repository.ParticipantEctoRepositoryTest do
   alias Repository.Parear.Repo
   alias Parear.{Stairs, Participant}
 
   use ExUnit.Case, async: true
 
   @stairs_repository Repository.ParearEctoRepository
-  @repository Parear.ParticipantRepository
+  @repository Repository.ParticipantEctoRepository
 
   setup do
     :ok = Ecto.Adapters.SQL.Sandbox.checkout(Repo)
@@ -14,19 +14,19 @@ defmodule Repository.ParticipantEctoImplTest do
       Stairs.new("Simple Stairs")
       |> @stairs_repository.save()
 
-    %{stairs: stairs}
+    %{stairs_id: stairs.id}
   end
 
-  test "Should insert and find new participant", %{stairs: stairs} do
+  test "Should insert and find new participant", %{stairs_id: stairs_id} do
     new_participant = Participant.new("Vitor")
     assert {:none} == find_by_id(new_participant)
 
-    {:ok, _} = @repository.insert(new_participant, stairs)
+    {:ok, _} = @repository.insert(new_participant, stairs_id)
 
     assert {:ok, new_participant} = find_by_id(new_participant)
   end
 
-  defp find_by_id(participant_with_id = %Participant{}) do
-    @repository.find_by_id(participant_with_id)
+  defp find_by_id(%Participant{id: id}) do
+    @repository.find_by_id(id)
   end
 end

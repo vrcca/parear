@@ -1,9 +1,10 @@
 defmodule Parear.Server do
   use GenServer
 
-  alias Parear.{Stairs, Participant, ParticipantRepository}
+  alias Parear.{Stairs, Participant}
 
   defp repository(), do: Application.get_env(:parear, :repository)
+  defp participant_repository(), do: Application.get_env(:parear, :participant_repository)
 
   def start_link(stairs = %Stairs{id: id}) do
     name = {:via, Registry, {Registry.Stairs, id}}
@@ -20,26 +21,26 @@ defmodule Parear.Server do
     |> reply_init()
   end
 
-  def init(%{id: id}) do
-    {:ok, %Stairs{id: id}, {:continue, :init_by_stairs_id}}
+  def init(args) do
+    {:ok, args, {:continue, :init_by_stairs_id}}
   end
 
-  def handle_continue(:init_by_stairs_id, stairs_with_id = %Stairs{}) do
-    stairs_with_id
+  def handle_continue(:init_by_stairs_id, %{id: id}) do
+    id
     |> repository().find_by_id()
     |> case do
       {:none} ->
-        {:stop, :stairs_could_not_be_found, stairs_with_id}
+        {:stop, :stairs_could_not_be_found, id}
 
       {:ok, stairs = %Stairs{}} ->
         {:noreply, stairs}
     end
   end
 
-  def handle_call({:add_participant, name}, _from, stairs) do
+  def handle_call({:add_participant, name}, _from, stairs = %Stairs{id: stairs_id}) do
     with new_participant <- Participant.new(name),
          updated_stairs <- Stairs.add_participant(stairs, new_participant),
-         {:ok, _} <- ParticipantRepository.insert(new_participant, updated_stairs) do
+         {:ok, _} <- participant_repository().insert(new_participant, stairs_id) do
       updated_stairs
       |> reply_ok()
     end

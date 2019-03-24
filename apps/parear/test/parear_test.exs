@@ -1,18 +1,24 @@
 defmodule ParearTest do
   use ExUnit.Case, async: false
   doctest Parear
-  alias Parear.Stairs
+  alias Parear.{Stairs, Participant}
   import Mox
 
   setup :verify_on_exit!
   setup :set_mox_global
 
   setup do
-    %{stairs_id: ""}
+    new_stairs = Stairs.new("The default stairs")
+    stairs_id = new_stairs.id
+
+    Parear.MockRepository
+    |> stub(:find_by_id, fn ^stairs_id -> {:ok, new_stairs} end)
+
+    %{stairs_id: stairs_id}
   end
 
   test "Creates stairs" do
-    Parear.RepositoryMock
+    Parear.MockRepository
     |> expect(:save, fn stairs -> stairs end)
 
     {:ok, stairs} =
@@ -25,20 +31,12 @@ defmodule ParearTest do
     assert not (stairs.id == "")
   end
 
-  @tag :pending
-  test "Adds participants", %{stairs_id: stairs_id} do
-    Parear.add_participant(stairs_id, "Kenya")
-    {:ok, %{stairs: stairs}} = Parear.add_participant(stairs_id, "Vitor")
-    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
-    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
-  end
-
   test "Restarts stairs from repository by id" do
     new_stairs = Stairs.new("The new stairs")
     id = new_stairs.id
 
-    Parear.RepositoryMock
-    |> expect(:find_by_id, fn %Stairs{id: ^id} -> {:ok, new_stairs} end)
+    Parear.MockRepository
+    |> expect(:find_by_id, fn ^id -> {:ok, new_stairs} end)
 
     {:ok, reloaded_stairs} = Parear.list(new_stairs.id)
 
@@ -46,13 +44,26 @@ defmodule ParearTest do
   end
 
   test "Fails to start when listing an unknown stair by id" do
-    Parear.RepositoryMock
-    |> expect(:find_by_id, fn %Stairs{id: _id} -> {:none} end)
+    Parear.MockRepository
+    |> expect(:find_by_id, fn _id -> {:none} end)
 
     unknown_id = "31b755c8-701d-4406-9eba-9a4fbbb6fec2"
     {:error, reason} = Parear.list(unknown_id)
 
     assert reason == :stairs_could_not_be_found
+  end
+
+  test "Adds participants", %{stairs_id: stairs_id} do
+    Parear.ParticipantMockRepository
+    |> expect(:insert, fn p = %Participant{name: "Kenya"}, ^stairs_id -> {:ok, p} end)
+
+    Parear.ParticipantMockRepository
+    |> expect(:insert, fn p = %Participant{name: "Vitor"}, ^stairs_id -> {:ok, p} end)
+
+    Parear.add_participant(stairs_id, "Kenya")
+    {:ok, %{stairs: stairs}} = Parear.add_participant(stairs_id, "Vitor")
+    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Vitor" end)
+    assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
 
   @tag :pending
