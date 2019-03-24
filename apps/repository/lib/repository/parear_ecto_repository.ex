@@ -1,19 +1,18 @@
-defmodule Repository.ParearEctoImpl do
+defmodule Repository.ParearEctoRepository do
   alias Repository.Parear.Stair
-  alias Repository.ParearEctoImpl
 
   @behaviour Parear.Repository
 
   @impl Parear.Repository
   def find_by_id(%Parear.Stairs{id: id}) do
     Stair.find_by_id(id)
-    |> ParearEctoImpl.respond_to_find()
+    |> respond_to_find()
   end
 
   @impl Parear.Repository
   def find_by_name(%Parear.Stairs{name: name}) do
     Stair.find_by_name(name)
-    |> ParearEctoImpl.respond_to_find()
+    |> respond_to_find()
   end
 
   @impl Parear.Repository
@@ -23,9 +22,9 @@ defmodule Repository.ParearEctoImpl do
     end
   end
 
-  def respond_to_find(nil), do: {:none}
+  defp respond_to_find(nil), do: {:none}
 
-  def respond_to_find(stairs) do
+  defp respond_to_find(stairs) do
     stairs =
       stairs
       |> Stair.load_participants()
