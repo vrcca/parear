@@ -14,6 +14,9 @@ defmodule ParearTest do
     Parear.MockRepository
     |> stub(:find_by_id, fn ^stairs_id -> {:ok, new_stairs} end)
 
+    Parear.ParticipantMockRepository
+    |> stub(:insert, fn participant, ^stairs_id -> {:ok, participant} end)
+
     %{stairs_id: stairs_id}
   end
 
@@ -66,34 +69,15 @@ defmodule ParearTest do
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
 
-  @tag :pending
-  test "Persists new participants to repository by id", %{stairs_id: id} do
-    Parear.add_participant(id, "Vitor")
-    {:ok, stairs} = Parear.list(id)
-
-    Parear.reload_by_id(id)
-    {:ok, reloaded_stairs} = Parear.list(id)
-
-    assert stairs == reloaded_stairs
-  end
-
-  @tag :pending
-  test "Persists removed participants to repository", %{stairs_id: stairs_id} do
-    Parear.add_participant(stairs_id, "Vitor")
-    Parear.remove_participant(stairs_id, "Vitor")
-    {:ok, stairs} = Parear.list(stairs_id)
-
-    Parear.reload_by_id(stairs.id)
-    {:ok, reloaded_stairs} = Parear.list(stairs_id)
-
-    assert stairs == reloaded_stairs
-  end
-
-  @tag :pending
   test "Removes participant by id", %{stairs_id: stairs_id} do
     Parear.add_participant(stairs_id, "Vitor")
-    {:ok, stairs} = Parear.list(stairs_id)
-    vitor_id = find_participant_id_by_name(stairs, "Vitor")
+
+    vitor_id =
+      Parear.list(stairs_id)
+      |> find_participant_id_by_name("Vitor")
+
+    Parear.MockRepository
+    |> expect(:save, fn stairs = %Stairs{id: ^stairs_id} -> stairs end)
 
     Parear.remove_participant_by_id(stairs_id, vitor_id)
     {:ok, updated_stairs} = Parear.list(stairs_id)
@@ -142,6 +126,9 @@ defmodule ParearTest do
 
     assert stairs == reloaded_stairs
   end
+
+  defp find_participant_id_by_name({:ok, stairs}, name),
+    do: find_participant_id_by_name(stairs, name)
 
   defp find_participant_id_by_name(%Stairs{participants: participants}, name) do
     {id, _participant} =
