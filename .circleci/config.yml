@@ -10,27 +10,6 @@ jobs:
           key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/parear
-
-  retrieve_dependencies:
-    docker:
-      - image: circleci/elixir:1.8
-    working_directory: ~/parear
-    steps:
-      - restore_cache:
-          key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
-      - restore_cache:
-          keys:
-            - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
-            - v1-mix-cache-{{ .Branch }}
-            - v1-mix-cache
-      - run: mix local.hex --force
-      - run: mix local.rebar --force
-      - run: mix do deps.get
-      - save_cache:
-          key: v1-repo-deps-{{ .Environment.CIRCLE_SHA1 }}
-          paths:
-            - ~/parear
-
   run_tests:
     docker:
       - image: circleci/elixir:1.8
@@ -51,16 +30,13 @@ jobs:
       - run: mix local.rebar --force
       - run: mix do deps.get
       - run: mix do ecto.create, ecto.migrate
-      - run: make unit-test
+      - run: make test
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - checkout_code
-      - retrieve_dependencies:
-          requires:
-            - checkout_code
       - run_tests:
           requires:
-            - retrieve_dependencies
+            - checkout_code
