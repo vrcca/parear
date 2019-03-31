@@ -58,3 +58,6 @@ workflows:
       - retrieve_dependencies:
           requires:
             - checkout_code
+      - run_tests:
+          requires:
+            - retrieve_dependencies
