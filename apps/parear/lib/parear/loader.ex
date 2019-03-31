@@ -1,5 +1,5 @@
 defmodule Parear.Loader do
-  alias Parear.{Stairs, Repository}
+  alias Parear.{Stairs}
 
   def create(name, options \\ []) do
     with new_stairs <- Stairs.new(name, options),
@@ -11,12 +11,6 @@ defmodule Parear.Loader do
 
   def load_by_id(id) do
     %{id: id}
-    |> start_stairs()
-    |> reply()
-  end
-
-  def load_by_name(name) do
-    Repository.find_by_name(%Stairs{name: name})
     |> start_stairs()
     |> reply()
   end

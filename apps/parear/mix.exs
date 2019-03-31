@@ -27,6 +27,9 @@ defmodule Parear.MixProject do
   end
 
   defp deps do
-    [{:elixir_uuid, "~> 1.2"}]
+    [
+      {:elixir_uuid, "~> 1.2"},
+      {:mox, "~> 0.5", only: [:test, :integration]}
+    ]
   end
 end

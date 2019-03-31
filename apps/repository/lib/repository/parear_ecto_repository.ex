@@ -1,28 +1,24 @@
-defmodule Repository.ParearEctoImpl do
+defmodule Repository.ParearEctoRepository do
   alias Repository.Parear.Stair
-  alias Repository.ParearEctoImpl
 
-  defimpl Parear.Repository, for: Parear.Stairs do
-    def find_by_id(%Parear.Stairs{id: id}) do
-      Stair.find_by_id(id)
-      |> ParearEctoImpl.respond_to_find()
-    end
+  @behaviour Parear.Repository
 
-    def find_by_name(%Parear.Stairs{name: name}) do
-      Stair.find_by_name(name)
-      |> ParearEctoImpl.respond_to_find()
-    end
+  @impl Parear.Repository
+  def find_by_id(id) do
+    Stair.find_by_id(id)
+    |> respond_to_find()
+  end
 
-    def save(stairs = %Parear.Stairs{}) do
-      with {:ok, _result} <- Stair.save_cascade(stairs) do
-        stairs
-      end
+  @impl Parear.Repository
+  def save(stairs = %Parear.Stairs{}) do
+    with {:ok, _result} <- Stair.save_cascade(stairs) do
+      stairs
     end
   end
 
-  def respond_to_find(nil), do: {:none}
+  defp respond_to_find(nil), do: {:none}
 
-  def respond_to_find(stairs) do
+  defp respond_to_find(stairs) do
     stairs =
       stairs
       |> Stair.load_participants()

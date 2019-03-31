@@ -1,7 +1,6 @@
-defprotocol Parear.ParticipantRepository do
-  @doc "Inserts a participant into a stairs. It returns either {:ok, term} or {:error, reason}"
-  def insert(participant, stairs)
+defmodule Parear.ParticipantRepository do
+  alias Parear.Participant
 
-  @doc "Retrieves a participant by its id. It returns either {:ok, term} or {:none}"
-  def find_by_id(participant_with_id)
+  @callback find_by_id(String.t()) :: {:ok, %Participant{}} | {:error, String.t()} | {:none}
+  @callback insert(%Participant{}, String.t()) :: {:ok, %Participant{}} | {:error, String.t()}
 end

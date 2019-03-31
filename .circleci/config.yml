@@ -3,7 +3,6 @@ jobs:
   checkout_code:
     docker:
       - image: circleci/elixir:1.8
-      - image: circleci/postgres:9.4.12
     working_directory: ~/parear
     steps:
       - checkout
@@ -12,10 +11,13 @@ jobs:
           paths:
             - ~/parear
 
-  retrieve_dependencies:
+  run_tests:
     docker:
       - image: circleci/elixir:1.8
-      - image: circleci/postgres:9.4.12-alpine
+      - image: circleci/postgres:9.4.12
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
     working_directory: ~/parear
     steps:
       - restore_cache:
@@ -27,13 +29,15 @@ jobs:
             - v1-mix-cache
       - run: mix local.hex --force
       - run: mix local.rebar --force
-      - run: mix do deps.get, compile
+      - run: mix do deps.get
+      - run: mix do ecto.create, ecto.migrate
+      - run: make test
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - checkout_code
-      - retrieve_dependencies:
+      - run_tests:
           requires:
             - checkout_code
