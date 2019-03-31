@@ -1,6 +1,8 @@
 version: 2
 jobs:
   checkout_code:
+    docker:
+      - image: circleci/elixir:1.8
     working_directory: ~/parear
     steps:
       - checkout
