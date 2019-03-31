@@ -10,6 +10,7 @@ jobs:
           key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
           paths:
             - ~/parear
+
   run_tests:
     docker:
       - image: circleci/elixir:1.8
@@ -20,7 +21,7 @@ jobs:
     working_directory: ~/parear
     steps:
       - restore_cache:
-          key: v1-repo-deps-{{ .Environment.CIRCLE_SHA1 }}
+          key: v1-repo-code-{{ .Environment.CIRCLE_SHA1 }}
       - restore_cache:
           keys:
             - v1-mix-cache-{{ .Branch }}-{{ checksum "mix.lock" }}
