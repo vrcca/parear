@@ -35,3 +35,8 @@
         <%= @conn |> manage_participants_button(@stairs.id) %>
     <% end %>
 </div>
+
+
+<script type="text/javascript">
+ let stairs = <%= raw stairs_to_json(@stairs) %>
+</script>

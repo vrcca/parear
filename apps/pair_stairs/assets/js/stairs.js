@@ -1,5 +1,5 @@
-import StairsServer from "./stairs_server"
 import Vue from 'vue'
+import StairsServer from "./stairs_server"
 
 let connectionView = function(server, translations) {
     let app = new Vue({
@@ -66,18 +66,7 @@ window.onload = function() {
     if (!root) {
         return;
     }
-    let stairs = {
-        id: stairs_id_from(root),
-        participants: {
-            "a": {"id": "a", "name": translations.loading},
-            "b": {"id": "b", "name": translations.loading},
-            "c": {"id": "c", "name": translations.loading},
-            "d": {"id": "d", "name": translations.loading},
-            "e": {"id": "e", "name": translations.loading}
-        },
-        statuses: {
-        }
-    }
+    // stairs defined in stairs/show.html.ex
     let server = new StairsServer(stairs)
     let app = view(server)
     let connectionStatus = connectionView(server, translations)

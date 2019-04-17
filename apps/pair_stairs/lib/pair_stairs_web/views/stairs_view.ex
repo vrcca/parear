@@ -22,4 +22,8 @@ defmodule PairStairsWeb.StairsView do
       _ -> ""
     end
   end
+
+  def stairs_to_json(stairs = %Stairs{id: id, participants: participants}) do
+    Jason.encode!(stairs)
+  end
 end
