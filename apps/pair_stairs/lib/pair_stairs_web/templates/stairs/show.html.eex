@@ -5,7 +5,7 @@
     <div class="stairs-limit"><%= gettext("Limit") %>: <%= @stairs.limit %></div>
 </div>
 
-<table id="pair-stairs" data-stairs-id="<%= @stairs.id %>" class="stairs">
+<table id="pair-stairs" data-stairs-id="<%= @stairs.id %>" class="stairs" v-cloak>
     <tbody>
         <tr v-for="(participant, row_index) in stairs.participants" :key="participant.id">
             <td class="pair-name">{{participant.name}}</td>
