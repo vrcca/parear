@@ -18,7 +18,6 @@ export default class StairsServer {
             .receive("ok", resp => {
                 console.log("Joined successfully", resp)
                 this.connection.status = "connected"
-                this.fetch_stairs()
             })
             .receive("error", resp => {
                 console.log("Unable to join", resp)

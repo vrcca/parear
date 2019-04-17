@@ -1,6 +1,7 @@
 defmodule PairStairsWeb.StairsView do
   use PairStairsWeb, :view
   alias Parear.Stairs
+  alias PairStairsWeb.ParticipantView
 
   def statuses_for(%Stairs{statuses: statuses}, id, friend_id) do
     get_in(statuses, [id, friend_id]) || 0
@@ -23,7 +24,17 @@ defmodule PairStairsWeb.StairsView do
     end
   end
 
-  def stairs_to_json(stairs = %Stairs{id: id, participants: participants}) do
-    Jason.encode!(stairs)
+  def stairs_to_json(stairs = %Stairs{}) do
+    stairs
+    |> convert_to_map()
+    |> Jason.encode!()
+  end
+
+  def convert_to_map(%Stairs{id: id, participants: participants, statuses: statuses}) do
+    %{id: id, participants: convert_to_list(participants), statuses: statuses}
+  end
+
+  defp convert_to_list(participants = %{}) do
+    ParticipantView.sorted_list(participants)
   end
 end

@@ -1,8 +1,7 @@
 defmodule PairStairsWeb.StairsChannel do
   use Phoenix.Channel
 
-  alias PairStairsWeb.ParticipantView
-  alias Parear.Stairs
+  alias PairStairsWeb.StairsView
 
   def join("stairs:" <> id, _message, socket) do
     socket = assign(socket, :stairs_id, id)
@@ -12,7 +11,7 @@ defmodule PairStairsWeb.StairsChannel do
   def handle_in("stairs", _, socket) do
     id = socket.assigns[:stairs_id]
     {:ok, stairs} = Parear.list(id)
-    push(socket, "stairs", convert_to_map(stairs))
+    push(socket, "stairs", StairsView.convert_to_map(stairs))
     {:noreply, socket}
   end
 
@@ -20,7 +19,7 @@ defmodule PairStairsWeb.StairsChannel do
     id = socket.assigns[:stairs_id]
     Parear.pair(id, participant, friend)
     {:ok, stairs} = Parear.list(id)
-    broadcast!(socket, "stairs", convert_to_map(stairs))
+    broadcast!(socket, "stairs", StairsView.convert_to_map(stairs))
     {:noreply, socket}
   end
 
@@ -28,15 +27,7 @@ defmodule PairStairsWeb.StairsChannel do
     id = socket.assigns[:stairs_id]
     Parear.unpair(id, participant, friend)
     {:ok, stairs} = Parear.list(id)
-    broadcast!(socket, "stairs", convert_to_map(stairs))
+    broadcast!(socket, "stairs", StairsView.convert_to_map(stairs))
     {:noreply, socket}
-  end
-
-  defp convert_to_map(%Stairs{id: id, participants: participants, statuses: statuses}) do
-    %{id: id, participants: convert_to_list(participants), statuses: statuses}
-  end
-
-  defp convert_to_list(participants = %{}) do
-    ParticipantView.sorted_list(participants)
   end
 end

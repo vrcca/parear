@@ -19,14 +19,14 @@ defmodule Repository.Parear.Stair do
 
   def insert_or_update_with_participants_changeset(stairs = %Parear.Stairs{id: id}) do
     retrieve_or_create(id)
-    |> Repo.preload(:participants)
+    |> load_participants()
     |> changeset(Map.from_struct(stairs))
     |> put_assoc(:participants, Participant.convert_all_from(stairs))
   end
 
   def insert_or_update_with_statuses_changeset(stairs = %Parear.Stairs{id: id}) do
     retrieve_or_create(id)
-    |> Repo.preload(:pair_statuses)
+    |> load_pair_statuses()
     |> changeset(Map.from_struct(stairs))
     |> put_assoc(:pair_statuses, PairStatus.convert_all_from(stairs))
   end
