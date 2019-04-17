@@ -1,6 +1,12 @@
 defmodule PairStairsWeb.LayoutView do
   use PairStairsWeb, :view
 
+  def page_title(conn) do
+    [conn.assigns[:title], gettext("Pair Matrix")]
+    |> Enum.filter(&(&1 != nil))
+    |> Enum.join(" - ")
+  end
+
   def new_stairs_button(conn) do
     top_page_button(conn, conn.params)
   end

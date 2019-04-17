@@ -6,6 +6,7 @@ defmodule PairStairsWeb.ParticipantController do
 
     conn
     |> assign(:participants, stairs.participants)
+    |> assign(:title, gettext("Participants"))
     |> render("index.html")
   end
 

@@ -18,6 +18,7 @@ defmodule PairStairsWeb.StairsController do
 
     conn
     |> save_to_recently_visited_stairs(stairs)
+    |> assign(:title, stairs.name)
     |> render("show.html", stairs: stairs)
   end
 
