@@ -1,4 +1,9 @@
 <p><%= return_to_stairs_button(@conn) %></p>
 <h1><%= gettext("Preferences") %></h1>
 
-<%= manage_participants_button(@conn)  %>
+<%= manage_participants_button(@conn)  %><br/>
+<hr/>
+<h2><%= gettext("Danger zone") %>!</h2>
+<p>
+    <%= reset_stairs_button(@conn) %>
+</p>

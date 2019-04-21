@@ -21,6 +21,7 @@ defmodule PairStairsWeb.Router do
     resources "/stairs", StairsController, only: [:new, :create, :show] do
       resources "/preferences", PreferencesController, only: [:index]
       resources "/participants", ParticipantController, only: [:create, :index, :delete]
+      delete "/statuses", StatusController, :delete
     end
   end
 

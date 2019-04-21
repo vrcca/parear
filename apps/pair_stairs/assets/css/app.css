@@ -1,6 +1,5 @@
 /* This file is for your main application css. */
-[v-cloak] {
-    display: none;
-}
+@import "./base.css";
 @import "./phoenix.css";
 @import "./stairs.css";
+

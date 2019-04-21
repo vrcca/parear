@@ -1,6 +1,11 @@
 defmodule PairStairsWeb.PreferencesView do
   use PairStairsWeb, :view
 
+  def return_to_stairs_button(conn) do
+    %{"stairs_id" => stairs_id} = conn.path_params
+    link(gettext("Return"), to: Routes.stairs_path(conn, :show, stairs_id))
+  end
+
   def manage_participants_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params
 
@@ -9,8 +14,14 @@ defmodule PairStairsWeb.PreferencesView do
     )
   end
 
-  def return_to_stairs_button(conn) do
+  def reset_stairs_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params
-    link(gettext("Return"), to: Routes.stairs_path(conn, :show, stairs_id))
+
+    link("Reset stairs counter",
+      to: Routes.stairs_status_path(conn, :delete, stairs_id),
+      method: :delete,
+      data: [confirm: gettext("This action will REMOVE any previous pair counts. Are you sure?")],
+      class: 'link-danger'
+    )
   end
 end

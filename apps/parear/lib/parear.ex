@@ -24,7 +24,9 @@ defmodule Parear do
   end
 
   def reset_all_counters(stairs) do
-    GenServer.call(from_registry(stairs), {:reset_counters})
+    stairs
+    |> ensure_running()
+    |> call({:reset_counters})
   end
 
   def remove_participant(stairs, name) do

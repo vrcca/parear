@@ -1,5 +1,6 @@
 defmodule PairStairsWeb.ParticipantController do
   use PairStairsWeb, :controller
+  alias PairStairsWeb.{Endpoint, StairsView}
 
   def index(conn, %{"stairs_id" => stairs_id}) do
     {:ok, stairs} = Parear.list(stairs_id)
@@ -32,6 +33,8 @@ defmodule PairStairsWeb.ParticipantController do
   end
 
   defp redirect_to_index(conn, stairs_id) do
+    {:ok, stairs} = Parear.list(stairs_id)
+    Endpoint.broadcast("stairs:#{stairs_id}", "stairs", StairsView.convert_to_map(stairs))
     redirect(conn, to: Routes.stairs_participant_path(conn, :index, stairs_id))
   end
 end
