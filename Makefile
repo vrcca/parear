@@ -1,3 +1,7 @@
+build:
+	mix do deps.get, compile; \
+	cd apps/pair_stairs/assets; npm install; cd -
+
 test: unit-test integration-test
 
 unit-test:
@@ -17,3 +21,6 @@ run:
 
 format:
 	mix format
+
+migrate:
+	mix ecto.create; mix ecto.migrate
