@@ -27,12 +27,19 @@ header div.app-name a {
 .stairs-limit {
     float: right;
 }
+.stairs .pair-name {
+    padding: 0.1rem 0.7rem;
+}
 .stairs button {
-    padding-left: 1rem;
-    padding-right: 1rem;
+    padding: 0 1rem;
+    margin: 0 0.5rem;
+}
+.stairs button:hover {
+    background-color: silver;
+    color: white;
 }
 .stairs span.total {
-    padding: 0 1rem 0 1rem;
+    padding: 0 0;
 }
 .stairs tr {
     line-height: 5rem;
@@ -70,13 +77,11 @@ header div.app-name a {
   width: 100%;
   z-index: -1;
 }
-table {
-  overflow: hidden;
+table.stairs {
+    width: auto;
+    clear: left;
+    margin: 0 auto;
 }
-.full-page-container {
-    max-width: 100%;
-}
-
 #connection-status {
     text-align: center;
     float: left;

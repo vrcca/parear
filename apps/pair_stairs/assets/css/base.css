@@ -4,3 +4,9 @@
 .link-danger {
   color: #f50d0d;
 }
+table {
+    overflow: hidden;
+}
+.full-page-container {
+    max-width: 100%;
+}
