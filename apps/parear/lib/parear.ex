@@ -16,11 +16,15 @@ defmodule Parear do
   end
 
   def pair(stairs, participant, another_participant) do
-    GenServer.call(from_registry(stairs), {:pair, participant, another_participant})
+    stairs
+    |> ensure_running()
+    |> call({:pair, participant, another_participant})
   end
 
   def unpair(stairs, participant, another_participant) do
-    GenServer.call(from_registry(stairs), {:unpair, participant, another_participant})
+    stairs
+    |> ensure_running()
+    |> call({:unpair, participant, another_participant})
   end
 
   def reset_all_counters(stairs) do
