@@ -14,6 +14,9 @@ defmodule ParearTest do
     Parear.MockRepository
     |> stub(:find_by_id, fn ^stairs_id -> {:ok, new_stairs} end)
 
+    Parear.MockRepository
+    |> stub(:save, fn stairs -> {:ok, stairs} end)
+
     Parear.ParticipantMockRepository
     |> stub(:insert, fn participant, ^stairs_id -> {:ok, participant} end)
 
@@ -91,10 +94,8 @@ defmodule ParearTest do
     Parear.add_participant(stairs_id, "Kenya")
     Parear.pair(stairs_id, "Vitor", "Kenya")
     {:ok, stairs} = Parear.list(stairs_id)
-
-    Parear.reload_by_id(stairs.id)
+    kill_process_by_stairs_id(stairs_id)
     {:ok, reloaded_stairs} = Parear.list(stairs_id)
-
     assert stairs == reloaded_stairs
   end
 
@@ -135,5 +136,13 @@ defmodule ParearTest do
       Enum.find(participants, {nil, nil}, fn {_id, participant} -> participant.name == name end)
 
     id
+  end
+
+  defp kill_process_by_stairs_id(id) do
+    Registry.lookup(Registry.Stairs, id)
+    |> case do
+      [] -> :no_process_killed
+      [{pid, _}] -> Process.exit(pid, :kill)
+    end
   end
 end

@@ -1,4 +1,5 @@
 defmodule Parear.Loader do
+  require Logger
   alias Parear.{Stairs}
 
   def create(name, options \\ []) do
@@ -40,7 +41,9 @@ defmodule Parear.Loader do
       {:ok, stairs} = GenServer.call(id, {:list})
       reply(stairs.id)
     catch
-      :exit, e -> reply(e)
+      :exit, e ->
+        Logger.error("Unable to load stairs #{id} properly! Error #{inspect(e)}")
+        reply(e)
     end
   end
 
