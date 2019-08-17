@@ -42,7 +42,7 @@ defmodule Parear.Loader do
       reply(stairs.id)
     catch
       :exit, e ->
-        Logger.error("Unable to load stairs #{id} properly! Error #{inspect(e)}")
+        Logger.error("Unable to load stairs #{inspect(id)} properly! Error #{inspect(e)}")
         reply(e)
     end
   end
