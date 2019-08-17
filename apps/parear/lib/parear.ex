@@ -10,27 +10,19 @@ defmodule Parear do
   end
 
   def add_participant(stairs, name) do
-    stairs
-    |> ensure_running()
-    |> call({:add_participant, name})
+    ensure_call(stairs, {:add_participant, name})
   end
 
   def pair(stairs, participant, another_participant) do
-    stairs
-    |> ensure_running()
-    |> call({:pair, participant, another_participant})
+    ensure_call(stairs, {:pair, participant, another_participant})
   end
 
   def unpair(stairs, participant, another_participant) do
-    stairs
-    |> ensure_running()
-    |> call({:unpair, participant, another_participant})
+    ensure_call(stairs, {:unpair, participant, another_participant})
   end
 
   def reset_all_counters(stairs) do
-    stairs
-    |> ensure_running()
-    |> call({:reset_counters})
+    ensure_call(stairs, {:reset_counters})
   end
 
   def remove_participant(stairs, name) do
@@ -38,15 +30,17 @@ defmodule Parear do
   end
 
   def remove_participant_by_id(stairs, id) do
-    stairs
-    |> ensure_running()
-    |> call({:remove_participant_by_id, id})
+    ensure_call(stairs, {:remove_participant_by_id, id})
   end
 
   def list(stairs) do
+    ensure_call(stairs, {:list})
+  end
+
+  defp ensure_call(stairs, args) do
     stairs
     |> ensure_running()
-    |> call({:list})
+    |> call(args)
   end
 
   defp ensure_running(stairs) do
