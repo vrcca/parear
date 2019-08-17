@@ -64,6 +64,22 @@ defmodule Parear.StairsTest do
     assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
+  test "Pairing two participants by id automatically updates their pair count", %{
+    simple_stairs: stairs
+  } do
+    stairs = Stairs.add_participant(stairs, "Elvis")
+
+    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+
+    {:ok, stairs} = stairs |> Stairs.pair(vitor.id, kenya.id)
+
+    assert %{kenya.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
+    assert %{vitor.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
+    assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
+  end
+
   test "Undo pairing two participants automatically undos their pair count", %{
     simple_stairs: stairs
   } do

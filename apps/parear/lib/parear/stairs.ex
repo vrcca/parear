@@ -46,6 +46,13 @@ defmodule Parear.Stairs do
     end
   end
 
+  defp find_participant(stairs, term) do
+    case find_participant_by_id(stairs, term) do
+      nil -> find_participant_by_name(stairs, term)
+      p -> p
+    end
+  end
+
   def find_participant_by_id(%Stairs{participants: participants}, id) do
     Map.get(participants, id)
   end
@@ -77,13 +84,13 @@ defmodule Parear.Stairs do
   end
 
   def remove_participant(stairs = %Stairs{}, name) do
-    participant = find_participant_by_name(stairs, name)
+    participant = find_participant(stairs, name)
     remove_participant(stairs, participant)
   end
 
-  def pair(stairs = %Stairs{}, name, another_name) do
-    participant = find_participant_by_name(stairs, name)
-    another_participant = find_participant_by_name(stairs, another_name)
+  def pair(stairs = %Stairs{}, id, another_id) do
+    participant = find_participant(stairs, id)
+    another_participant = find_participant(stairs, another_id)
     validation = Validations.prepare_with(stairs, participant, another_participant)
 
     with {:ok, _} <- validation.(:participants_exist),
@@ -97,8 +104,8 @@ defmodule Parear.Stairs do
   end
 
   def unpair(stairs = %Stairs{}, name, another_name) do
-    participant = find_participant_by_name(stairs, name)
-    another_participant = find_participant_by_name(stairs, another_name)
+    participant = find_participant(stairs, name)
+    another_participant = find_participant(stairs, another_name)
     validation = Validations.prepare_with(stairs, participant, another_participant)
 
     with {:ok, _} <- validation.(:participants_exist) do
