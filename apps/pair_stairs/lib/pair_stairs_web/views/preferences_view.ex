@@ -3,7 +3,7 @@ defmodule PairStairsWeb.PreferencesView do
 
   def return_to_stairs_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params
-    link(gettext("Return"), to: Routes.stairs_path(conn, :show, stairs_id))
+    link(gettext("Stairs"), to: Routes.stairs_path(conn, :show, stairs_id))
   end
 
   def manage_participants_button(conn) do

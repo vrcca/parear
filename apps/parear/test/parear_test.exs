@@ -72,22 +72,6 @@ defmodule ParearTest do
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
 
-  test "Removes participant by id", %{stairs_id: stairs_id} do
-    Parear.add_participant(stairs_id, "Vitor")
-
-    vitor_id =
-      Parear.list(stairs_id)
-      |> find_participant_id_by_name("Vitor")
-
-    Parear.MockRepository
-    |> expect(:save, fn stairs = %Stairs{id: ^stairs_id} -> stairs end)
-
-    Parear.remove_participant_by_id(stairs_id, vitor_id)
-    {:ok, updated_stairs} = Parear.list(stairs_id)
-
-    assert nil == find_participant_id_by_name(updated_stairs, "Vitor")
-  end
-
   @tag :pending
   test "Persists new pairings to repository", %{stairs_id: stairs_id} do
     Parear.add_participant(stairs_id, "Vitor")
@@ -126,16 +110,6 @@ defmodule ParearTest do
     {:ok, reloaded_stairs} = Parear.list(stairs_id)
 
     assert stairs == reloaded_stairs
-  end
-
-  defp find_participant_id_by_name({:ok, stairs}, name),
-    do: find_participant_id_by_name(stairs, name)
-
-  defp find_participant_id_by_name(%Stairs{participants: participants}, name) do
-    {id, _participant} =
-      Enum.find(participants, {nil, nil}, fn {_id, participant} -> participant.name == name end)
-
-    id
   end
 
   defp kill_process_by_stairs_id(id) do

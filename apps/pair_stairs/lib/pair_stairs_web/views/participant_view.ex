@@ -1,5 +1,6 @@
 defmodule PairStairsWeb.ParticipantView do
   use PairStairsWeb, :view
+  import PairStairsWeb.PreferencesView, only: [return_to_stairs_button: 1]
 
   def return_to_preferences_button(conn) do
     %{"stairs_id" => stairs_id} = conn.path_params

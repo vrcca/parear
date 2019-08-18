@@ -68,14 +68,6 @@ defmodule Parear.Server do
     |> reply_ok()
   end
 
-  def handle_call({:remove_participant_by_id, id}, _from, stairs) do
-    participant = stairs |> Stairs.find_participant_by_id(id)
-
-    Stairs.remove_participant(stairs, participant)
-    |> repository().save()
-    |> reply_ok()
-  end
-
   def handle_call({:save}, _from, stairs) do
     stairs
     |> repository().save()

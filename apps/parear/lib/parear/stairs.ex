@@ -33,8 +33,6 @@ defmodule Parear.Stairs do
   def add_participant(stairs = %Stairs{}, name),
     do: add_participant(stairs, Participant.new(name))
 
-  def find_participant_by_id(stairs = %Stairs{}, id), do: find_participant(stairs, id)
-
   def find_participant(stairs = %Stairs{}, id) do
     find_participant_by(stairs, :id, id)
     |> Kernel.||(find_participant_by(stairs, :name, id))

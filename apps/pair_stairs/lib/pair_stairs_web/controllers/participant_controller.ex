@@ -1,6 +1,7 @@
 defmodule PairStairsWeb.ParticipantController do
   use PairStairsWeb, :controller
   alias PairStairsWeb.{Endpoint, StairsView}
+  alias Parear.Participant
 
   def index(conn, %{"stairs_id" => stairs_id}) do
     {:ok, stairs} = Parear.list(stairs_id)
@@ -17,7 +18,8 @@ defmodule PairStairsWeb.ParticipantController do
   end
 
   def delete(conn, %{"stairs_id" => stairs_id, "id" => participant_id}) do
-    Parear.remove_participant_by_id(stairs_id, participant_id)
+    participant = Participant.new(id: participant_id)
+    Parear.remove_participant(stairs_id, participant)
 
     conn
     |> put_flash(:info, gettext("Participant removed with success."))
