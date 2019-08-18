@@ -20,8 +20,8 @@ defmodule Repository.Parear.PairStatusTest do
       |> Stairs.add_participant("Vitor")
       |> Stairs.add_participant("Kenya")
 
-    vitor = Stairs.find_participant_by_name(stairs, "Vitor")
-    kenya = Stairs.find_participant_by_name(stairs, "Kenya")
+    vitor = find_by_name(stairs, "Vitor")
+    kenya = find_by_name(stairs, "Kenya")
 
     pair_statuses = PairStatus.convert_all_from(stairs)
     assert pair_statuses |> length() == 2
@@ -38,5 +38,12 @@ defmodule Repository.Parear.PairStatusTest do
       end)
 
     matches != nil && get_field(matches, :total) == total
+  end
+
+  defp find_by_name(%Stairs{participants: participants}, name) do
+    participants
+    |> Enum.into([])
+    |> Enum.map(fn {_id, p} -> p end)
+    |> Enum.find(fn p -> p.name == name end)
   end
 end

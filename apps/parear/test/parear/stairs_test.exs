@@ -17,7 +17,7 @@ defmodule Parear.StairsTest do
     participant =
       Stairs.new("Another")
       |> Stairs.add_participant("Vitor")
-      |> Stairs.find_participant_by_name("Vitor")
+      |> find_by_name("Vitor")
 
     assert nil != participant
     assert nil != participant.id
@@ -29,11 +29,11 @@ defmodule Parear.StairsTest do
       Stairs.new("Another")
       |> Stairs.add_participant("Vitor")
 
-    participant = Stairs.find_participant_by_name(stairs, "Vitor")
+    vitor = find_by_name(stairs, "Vitor")
 
     statuses =
       stairs
-      |> Stairs.statuses_for_participant(participant)
+      |> Stairs.statuses_for_participant(vitor)
 
     assert nil == statuses
   end
@@ -43,21 +43,22 @@ defmodule Parear.StairsTest do
   } do
     assert map_size(stairs.participants) == 2
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
 
     assert %{vitor.id => %{kenya.id => 0}, kenya.id => %{vitor.id => 0}} == stairs.statuses
   end
 
   test "Pairing two participants automatically updates their pair count", %{simple_stairs: stairs} do
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
+
     {:ok, stairs} =
       stairs
       |> Stairs.add_participant("Elvis")
-      |> Stairs.pair("Vitor", "Kenya")
+      |> Stairs.pair(vitor, kenya)
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
-    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+    elvis = stairs |> find_by_name("Elvis")
 
     assert %{kenya.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
     assert %{vitor.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
@@ -69,9 +70,9 @@ defmodule Parear.StairsTest do
   } do
     stairs = Stairs.add_participant(stairs, "Elvis")
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
-    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
+    elvis = stairs |> find_by_name("Elvis")
 
     {:ok, stairs} = stairs |> Stairs.pair(vitor.id, kenya.id)
 
@@ -84,16 +85,15 @@ defmodule Parear.StairsTest do
     simple_stairs: stairs
   } do
     stairs = stairs |> Stairs.add_participant("Elvis")
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
+    elvis = stairs |> find_by_name("Elvis")
 
     stairs =
-      with {:ok, paired_stairs} <- Stairs.pair(stairs, "Vitor", "Kenya"),
-           {:ok, unpaired_stairs} <- Stairs.unpair(paired_stairs, "Vitor", "Kenya") do
+      with {:ok, paired_stairs} <- Stairs.pair(stairs, vitor, kenya),
+           {:ok, unpaired_stairs} <- Stairs.unpair(paired_stairs, vitor, kenya) do
         unpaired_stairs
       end
-
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
-    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
 
     assert %{kenya.id => 0, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
     assert %{vitor.id => 0, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
@@ -101,22 +101,23 @@ defmodule Parear.StairsTest do
   end
 
   test "Should do nothing when unpairing when they never paired", %{simple_stairs: stairs} do
-    {:ok, stairs} = Stairs.unpair(stairs, "Vitor", "Kenya")
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
+    {:ok, stairs} = Stairs.unpair(stairs, vitor, kenya)
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
     assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
     assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
   test "Should be able to reset stairs", %{simple_stairs: stairs} do
+    vitor = stairs |> find_by_name("Vitor")
+    kenya = stairs |> find_by_name("Kenya")
+
     stairs =
-      with {:ok, paired_stairs} = Stairs.pair(stairs, "Vitor", "Kenya") do
+      with {:ok, paired_stairs} = Stairs.pair(stairs, vitor, kenya) do
         Stairs.reset_all_counters(paired_stairs)
       end
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
     assert %{kenya.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
     assert %{vitor.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
   end
@@ -127,9 +128,9 @@ defmodule Parear.StairsTest do
       |> Stairs.add_participant("Elvis")
       |> Stairs.remove_participant("Vitor")
 
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
-    elvis = stairs |> Stairs.find_participant_by_name("Elvis")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    vitor = stairs |> find_by_name("Vitor")
+    elvis = stairs |> find_by_name("Elvis")
+    kenya = stairs |> find_by_name("Kenya")
 
     assert nil == vitor
     assert %{elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
@@ -137,14 +138,15 @@ defmodule Parear.StairsTest do
   end
 
   test "Should delete statuses from removed participant", %{simple_stairs: stairs} do
-    vitor = stairs |> Stairs.find_participant_by_name("Vitor")
+    vitor = stairs |> find_by_name("Vitor")
     stairs = stairs |> Stairs.remove_participant(vitor)
     assert nil == stairs |> Stairs.statuses_for_participant(vitor)
   end
 
   test "Should clean up single participant statuses", %{simple_stairs: stairs} do
-    stairs = stairs |> Stairs.remove_participant("Vitor")
-    kenya = stairs |> Stairs.find_participant_by_name("Kenya")
+    vitor = stairs |> find_by_name("Vitor")
+    stairs = stairs |> Stairs.remove_participant(vitor)
+    kenya = stairs |> find_by_name("Kenya")
     assert nil == stairs |> Stairs.statuses_for_participant(kenya)
   end
 
@@ -154,10 +156,13 @@ defmodule Parear.StairsTest do
       |> Stairs.add_participant("Elvis")
       |> Stairs.add_participant("Vitor")
 
+    vitor = find_by_name(stairs, "Vitor")
+    elvis = find_by_name(stairs, "Elvis")
+
     {:error, msg} =
-      with {:ok, updated_stairs} <- Stairs.pair(stairs, "Elvis", "Vitor"),
-           {:ok, stairs_on_limit} <- Stairs.pair(updated_stairs, "Elvis", "Vitor") do
-        Stairs.pair(stairs_on_limit, "Elvis", "Vitor")
+      with {:ok, updated_stairs} <- Stairs.pair(stairs, elvis, vitor),
+           {:ok, stairs_on_limit} <- Stairs.pair(updated_stairs, elvis, vitor) do
+        Stairs.pair(stairs_on_limit, elvis, vitor)
       end
 
     assert msg == "maximum_limit_reached"
@@ -172,9 +177,13 @@ defmodule Parear.StairsTest do
   end
 
   test "Should result error when unpairing unknown participants" do
+    stairs = stairs_with_two_participants()
+    kenya = find_by_name(stairs, "Kenya")
+    unknown_participant = Participant.new("Another one")
+
     {:error, msg} =
-      stairs_with_two_participants()
-      |> Stairs.unpair("Notregistered", "Kenya")
+      stairs
+      |> Stairs.unpair(unknown_participant, kenya)
 
     assert msg == "unknown_participant"
   end
@@ -201,7 +210,7 @@ defmodule Parear.StairsTest do
       statuses: %{}
     }
 
-    {:ok, updated_stairs} = stairs |> Stairs.pair("Vitor", "Kenya")
+    {:ok, updated_stairs} = stairs |> Stairs.pair(vitor, kenya)
 
     assert updated_stairs.statuses == %{
              vitor.id => %{kenya.id => 1},
@@ -213,5 +222,12 @@ defmodule Parear.StairsTest do
     Stairs.new("Old Stairs")
     |> Stairs.add_participant("Vitor")
     |> Stairs.add_participant("Kenya")
+  end
+
+  defp find_by_name(%Stairs{participants: participants}, name) do
+    participants
+    |> Enum.into([])
+    |> Enum.map(fn {_id, p} -> p end)
+    |> Enum.find(fn p -> p.name == name end)
   end
 end

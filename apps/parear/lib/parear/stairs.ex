@@ -33,28 +33,15 @@ defmodule Parear.Stairs do
   def add_participant(stairs = %Stairs{}, name),
     do: add_participant(stairs, Participant.new(name))
 
-  def find_participant_by_name(%Stairs{participants: participants}, name) do
-    found_participant =
-      participants
-      |> Enum.find(fn {_id, %Participant{name: participant_name}} ->
-        participant_name == name
-      end)
+  def find_participant_by_id(stairs = %Stairs{}, id), do: find_participant(stairs, id)
 
-    case found_participant do
-      {_id, participant} -> participant
+  def find_participant(stairs = %Stairs{}, id) do
+    find_participant_by(stairs, :id, id)
+    |> Kernel.||(find_participant_by(stairs, :name, id))
+    |> case do
       nil -> nil
+      {_id, p} -> p
     end
-  end
-
-  defp find_participant(stairs, term) do
-    case find_participant_by_id(stairs, term) do
-      nil -> find_participant_by_name(stairs, term)
-      p -> p
-    end
-  end
-
-  def find_participant_by_id(%Stairs{participants: participants}, id) do
-    Map.get(participants, id)
   end
 
   def find_participant_by(%Stairs{participants: participants}, property, value)
@@ -88,6 +75,10 @@ defmodule Parear.Stairs do
     remove_participant(stairs, participant)
   end
 
+  def pair(stairs = %Stairs{}, %Participant{id: id}, %Participant{id: another_id}) do
+    pair(stairs, id, another_id)
+  end
+
   def pair(stairs = %Stairs{}, id, another_id) do
     participant = find_participant(stairs, id)
     another_participant = find_participant(stairs, another_id)
@@ -101,6 +92,10 @@ defmodule Parear.Stairs do
 
       {:ok, updated_stairs}
     end
+  end
+
+  def unpair(stairs = %Stairs{}, %Participant{id: id}, %Participant{id: another_id}) do
+    unpair(stairs, id, another_id)
   end
 
   def unpair(stairs = %Stairs{}, name, another_name) do
