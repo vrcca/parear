@@ -1,5 +1,5 @@
 defmodule Parear do
-  alias Parear.Loader
+  alias Parear.{Loader, Participant}
 
   def new_stairs(name, options \\ []) do
     Loader.create(name, options)
@@ -13,11 +13,11 @@ defmodule Parear do
     ensure_call(stairs, {:add_participant, name})
   end
 
-  def pair(stairs, participant, another_participant) do
+  def pair(stairs, participant = %Participant{}, another_participant = %Participant{}) do
     ensure_call(stairs, {:pair, participant, another_participant})
   end
 
-  def unpair(stairs, participant, another_participant) do
+  def unpair(stairs, participant = %Participant{}, another_participant = %Participant{}) do
     ensure_call(stairs, {:unpair, participant, another_participant})
   end
 
@@ -25,7 +25,7 @@ defmodule Parear do
     ensure_call(stairs, {:reset_counters})
   end
 
-  def remove_participant(stairs, participant) do
+  def remove_participant(stairs, participant = %Participant{}) do
     GenServer.call(from_registry(stairs), {:remove_participant, participant})
   end
 
