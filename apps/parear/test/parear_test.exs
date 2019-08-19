@@ -72,6 +72,25 @@ defmodule ParearTest do
     assert true == Enum.any?(stairs, fn {participant, _} -> participant.name == "Kenya" end)
   end
 
+  test "Updates participant", %{stairs_id: stairs_id} do
+    Parear.ParticipantMockRepository
+    |> expect(:insert, fn p, ^stairs_id -> {:ok, p} end)
+
+    Parear.ParticipantMockRepository
+    |> expect(:update, fn p = %Participant{name: "Vitor's New Name"} -> {:ok, p} end)
+
+    {:ok, _statuses} = Parear.add_participant(stairs_id, "Vitor")
+
+    vitor =
+      Parear.list(stairs_id)
+      |> find_by_name("Vitor")
+      |> Participant.update_name("Vitor's New Name")
+
+    {:ok, _statuses} = Parear.update_participant(stairs_id, vitor)
+    assert nil == Parear.list(stairs_id) |> find_by_name("Vitor")
+    assert vitor == Parear.list(stairs_id) |> find_by_name("Vitor's New Name")
+  end
+
   @tag :pending
   test "Persists new pairings to repository", %{stairs_id: stairs_id} do
     Parear.add_participant(stairs_id, "Vitor")
@@ -118,5 +137,15 @@ defmodule ParearTest do
       [] -> :no_process_killed
       [{pid, _}] -> Process.exit(pid, :kill)
     end
+  end
+
+  defp find_by_name({:ok, stairs}, name), do: find_by_name(stairs, name)
+
+  defp find_by_name(stairs, name) do
+    stairs
+    |> Map.get(:participants)
+    |> Enum.into([])
+    |> Stream.map(fn {_id, p} -> p end)
+    |> Enum.find(fn p -> p.name == name end)
   end
 end

@@ -39,4 +39,12 @@ defmodule Repository.Parear.Participant do
     |> changeset(Map.from_struct(participant))
     |> Repo.insert()
   end
+
+  def update(participant = %Parear.Participant{}) do
+    participant
+    |> Map.get(:id)
+    |> find_by_id()
+    |> changeset(Map.from_struct(participant))
+    |> Repo.update()
+  end
 end

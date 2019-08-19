@@ -7,6 +7,11 @@ defmodule Repository.ParticipantEctoRepository do
   end
 
   @impl Parear.ParticipantRepository
+  def update(participant = %Parear.Participant{}) do
+    Repository.Parear.Participant.update(participant)
+  end
+
+  @impl Parear.ParticipantRepository
   def find_by_id(id) do
     Repository.Parear.Participant.find_by_id(id)
     |> handle_result()

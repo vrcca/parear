@@ -26,7 +26,11 @@ defmodule Parear do
   end
 
   def remove_participant(stairs, participant = %Participant{}) do
-    GenServer.call(from_registry(stairs), {:remove_participant, participant})
+    ensure_call(stairs, {:remove_participant, participant})
+  end
+
+  def update_participant(stairs, participant = %Participant{}) do
+    ensure_call(stairs, {:update_participant, participant})
   end
 
   def list(stairs) do

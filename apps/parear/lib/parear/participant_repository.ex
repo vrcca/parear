@@ -3,4 +3,5 @@ defmodule Parear.ParticipantRepository do
 
   @callback find_by_id(String.t()) :: {:ok, %Participant{}} | {:error, String.t()} | {:none}
   @callback insert(%Participant{}, String.t()) :: {:ok, %Participant{}} | {:error, String.t()}
+  @callback update(%Participant{}) :: {:ok, %Participant{}} | {:error, String.t()}
 end

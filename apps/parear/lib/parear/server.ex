@@ -37,15 +37,6 @@ defmodule Parear.Server do
     end
   end
 
-  def handle_call({:add_participant, name}, _from, stairs = %Stairs{id: stairs_id}) do
-    with new_participant <- Participant.new(name),
-         updated_stairs <- Stairs.add_participant(stairs, new_participant),
-         {:ok, _} <- participant_repository().insert(new_participant, stairs_id) do
-      updated_stairs
-      |> reply_ok()
-    end
-  end
-
   def handle_call({:pair, participant, another}, _from, stairs) do
     with {:ok, updated_stairs} <- Stairs.pair(stairs, participant, another) do
       updated_stairs
@@ -62,10 +53,25 @@ defmodule Parear.Server do
     end
   end
 
+  def handle_call({:add_participant, name}, _from, stairs = %Stairs{id: stairs_id}) do
+    with new_participant <- Participant.new(name),
+         updated_stairs <- Stairs.add_participant(stairs, new_participant),
+         {:ok, _} <- participant_repository().insert(new_participant, stairs_id) do
+      reply_ok(updated_stairs)
+    end
+  end
+
   def handle_call({:remove_participant, name}, _from, stairs) do
     Stairs.remove_participant(stairs, name)
     |> repository().save()
     |> reply_ok()
+  end
+
+  def handle_call({:update_participant, participant = %Participant{}}, _from, stairs) do
+    with updated_stairs <- Stairs.update_participant(stairs, participant),
+         {:ok, _} <- participant_repository().update(participant) do
+      reply_ok(updated_stairs)
+    end
   end
 
   def handle_call({:save}, _from, stairs) do

@@ -26,6 +26,16 @@ defmodule Repository.ParticipantEctoRepositoryTest do
     assert {:ok, new_participant} = find_by_id(new_participant)
   end
 
+  test "Should update participant", %{stairs_id: stairs_id} do
+    participant = Participant.new("Vitor")
+    {:ok, _} = @repository.insert(participant, stairs_id)
+    participant = Participant.update_name(participant, "Vitor's New Name")
+
+    {:ok, _} = @repository.update(participant)
+
+    assert participant = find_by_id(participant)
+  end
+
   defp find_by_id(%Participant{id: id}) do
     @repository.find_by_id(id)
   end
