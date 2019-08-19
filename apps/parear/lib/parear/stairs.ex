@@ -33,23 +33,6 @@ defmodule Parear.Stairs do
   def add_participant(stairs = %Stairs{}, name),
     do: add_participant(stairs, Participant.new(name))
 
-  def find_participant(stairs = %Stairs{}, id) do
-    find_participant_by(stairs, :id, id)
-    |> Kernel.||(find_participant_by(stairs, :name, id))
-    |> case do
-      nil -> nil
-      {_id, p} -> p
-    end
-  end
-
-  def find_participant_by(%Stairs{participants: participants}, property, value)
-      when is_atom(property) do
-    participants
-    |> Enum.find(fn {_id, participant} ->
-      Map.get(participant, property) == value
-    end)
-  end
-
   def statuses_for_participant(%Stairs{statuses: statuses}, %Participant{id: searched}) do
     {_, status} =
       statuses
@@ -68,18 +51,7 @@ defmodule Parear.Stairs do
     |> clean_up_single_participant_statuses()
   end
 
-  def remove_participant(stairs = %Stairs{}, name) do
-    participant = find_participant(stairs, name)
-    remove_participant(stairs, participant)
-  end
-
-  def pair(stairs = %Stairs{}, %Participant{id: id}, %Participant{id: another_id}) do
-    pair(stairs, id, another_id)
-  end
-
-  def pair(stairs = %Stairs{}, id, another_id) do
-    participant = find_participant(stairs, id)
-    another_participant = find_participant(stairs, another_id)
+  def pair(stairs = %Stairs{}, participant = %Participant{}, another_participant = %Participant{}) do
     validation = Validations.prepare_with(stairs, participant, another_participant)
 
     with {:ok, _} <- validation.(:participants_exist),
@@ -92,13 +64,11 @@ defmodule Parear.Stairs do
     end
   end
 
-  def unpair(stairs = %Stairs{}, %Participant{id: id}, %Participant{id: another_id}) do
-    unpair(stairs, id, another_id)
-  end
-
-  def unpair(stairs = %Stairs{}, name, another_name) do
-    participant = find_participant(stairs, name)
-    another_participant = find_participant(stairs, another_name)
+  def unpair(
+        stairs = %Stairs{},
+        participant = %Participant{},
+        another_participant = %Participant{}
+      ) do
     validation = Validations.prepare_with(stairs, participant, another_participant)
 
     with {:ok, _} <- validation.(:participants_exist) do

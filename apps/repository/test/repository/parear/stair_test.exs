@@ -50,9 +50,11 @@ defmodule Repository.Parear.StairTest do
 
     {:ok, _} = Stair.save_cascade(updated_stairs)
 
+    vitor = find_by_name(updated_stairs, "Vitor")
+
     {:ok, saved_stairs} =
       updated_stairs
-      |> Parear.Stairs.remove_participant("Vitor")
+      |> Parear.Stairs.remove_participant(vitor)
       |> Stair.save_cascade()
 
     stair_with_participants = Stair.load_participants(saved_stairs)
@@ -63,11 +65,17 @@ defmodule Repository.Parear.StairTest do
   test "Saves pair status from Parear.Stairs", %{pair_stairs: stairs} do
     id = stairs.id
 
-    {:ok, stairs_with_status} =
+    updated_stairs =
       stairs
       |> Parear.Stairs.add_participant("Vitor")
       |> Parear.Stairs.add_participant("Kenya")
-      |> Parear.Stairs.pair("Vitor", "Kenya")
+
+    vitor = find_by_name(updated_stairs, "Vitor")
+    kenya = find_by_name(updated_stairs, "Kenya")
+
+    {:ok, stairs_with_status} =
+      updated_stairs
+      |> Parear.Stairs.pair(vitor, kenya)
 
     {:ok, _} = Stair.save_cascade(stairs_with_status)
 
@@ -80,15 +88,21 @@ defmodule Repository.Parear.StairTest do
   end
 
   test "Deletes removed pair status from Parear.Stairs", %{pair_stairs: stairs} do
-    {:ok, stairs_with_status} =
+    updated_stairs =
       stairs
       |> Parear.Stairs.add_participant("Vitor")
       |> Parear.Stairs.add_participant("Kenya")
-      |> Parear.Stairs.pair("Vitor", "Kenya")
+
+    vitor = find_by_name(updated_stairs, "Vitor")
+    kenya = find_by_name(updated_stairs, "Kenya")
+
+    {:ok, stairs_with_status} =
+      updated_stairs
+      |> Parear.Stairs.pair(vitor, kenya)
 
     stairs_with_removed_participant =
       stairs_with_status
-      |> Parear.Stairs.remove_participant("Kenya")
+      |> Parear.Stairs.remove_participant(kenya)
 
     {:ok, _} = Stair.save_cascade(stairs_with_removed_participant)
 
@@ -113,4 +127,11 @@ defmodule Repository.Parear.StairTest do
 
   defp get_name(p = %Participant{}), do: Map.get(p, :name)
   defp get_name(p), do: Ecto.Changeset.get_field(p, :name)
+
+  defp find_by_name(%Parear.Stairs{participants: participants}, name) do
+    participants
+    |> Enum.into([])
+    |> Enum.map(fn {_id, p} -> p end)
+    |> Enum.find(fn p -> p.name == name end)
+  end
 end

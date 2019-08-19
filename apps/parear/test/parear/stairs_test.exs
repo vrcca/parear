@@ -65,22 +65,6 @@ defmodule Parear.StairsTest do
     assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
   end
 
-  test "Pairing two participants by id automatically updates their pair count", %{
-    simple_stairs: stairs
-  } do
-    stairs = Stairs.add_participant(stairs, "Elvis")
-
-    vitor = stairs |> find_by_name("Vitor")
-    kenya = stairs |> find_by_name("Kenya")
-    elvis = stairs |> find_by_name("Elvis")
-
-    {:ok, stairs} = stairs |> Stairs.pair(vitor.id, kenya.id)
-
-    assert %{kenya.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(vitor)
-    assert %{vitor.id => 1, elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
-    assert %{vitor.id => 0, kenya.id => 0} == stairs |> Stairs.statuses_for_participant(elvis)
-  end
-
   test "Undo pairing two participants automatically undos their pair count", %{
     simple_stairs: stairs
   } do
@@ -123,14 +107,16 @@ defmodule Parear.StairsTest do
   end
 
   test "Should allow removing a participant", %{simple_stairs: stairs} do
+    vitor = find_by_name(stairs, "Vitor")
+
     stairs =
       stairs
       |> Stairs.add_participant("Elvis")
-      |> Stairs.remove_participant("Vitor")
+      |> Stairs.remove_participant(vitor)
 
-    vitor = stairs |> find_by_name("Vitor")
-    elvis = stairs |> find_by_name("Elvis")
-    kenya = stairs |> find_by_name("Kenya")
+    vitor = find_by_name(stairs, "Vitor")
+    elvis = find_by_name(stairs, "Elvis")
+    kenya = find_by_name(stairs, "Kenya")
 
     assert nil == vitor
     assert %{elvis.id => 0} == stairs |> Stairs.statuses_for_participant(kenya)
@@ -169,9 +155,12 @@ defmodule Parear.StairsTest do
   end
 
   test "Should result error when pairing unknown participants", %{simple_stairs: stairs} do
+    not_registered = Participant.new("Notregistered")
+    kenya = find_by_name(stairs, "Kenya")
+
     {:error, msg} =
       stairs
-      |> Stairs.pair("Notregistered", "Kenya")
+      |> Stairs.pair(not_registered, kenya)
 
     assert msg == "unknown_participant"
   end
