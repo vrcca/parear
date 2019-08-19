@@ -207,6 +207,20 @@ defmodule Parear.StairsTest do
            }
   end
 
+  test "Should update participant", %{simple_stairs: stairs} do
+    participant =
+      stairs
+      |> find_by_name("Vitor")
+      |> Participant.update_name("New Name")
+
+    stairs = Stairs.update_participant(stairs, participant)
+    updated_participant = find_by_name(stairs, "New Name")
+    previous_participant = find_by_name(stairs, "Vitor")
+
+    assert nil == previous_participant
+    assert participant == updated_participant
+  end
+
   defp stairs_with_two_participants() do
     Stairs.new("Old Stairs")
     |> Stairs.add_participant("Vitor")

@@ -51,6 +51,10 @@ defmodule Parear.Stairs do
     |> clean_up_single_participant_statuses()
   end
 
+  def update_participant(stairs = %Stairs{}, participant = %Participant{id: id}) do
+    update_in(stairs, [:participants, id], fn _previous_version -> participant end)
+  end
+
   def pair(stairs = %Stairs{}, participant = %Participant{}, another_participant = %Participant{}) do
     validation = Validations.prepare_with(stairs, participant, another_participant)
 

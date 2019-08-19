@@ -12,4 +12,8 @@ defmodule Parear.Participant do
     %Participant{id: UUID.uuid4(), name: name}
     |> struct!(opts)
   end
+
+  def update_name(participant = %__MODULE__{}, name) do
+    Map.put(participant, :name, name)
+  end
 end
