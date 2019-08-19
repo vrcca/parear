@@ -10,3 +10,9 @@ table {
 .full-page-container {
     max-width: 100%;
 }
+.actions {
+    width: 20%;
+}
+.centralized {
+    text-align: center;
+}

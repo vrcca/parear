@@ -9,12 +9,6 @@ header div.app-name a {
 .unpairable {
     color: silver;
 }
-.actions {
-    width: 20%;
-}
-.centralized {
-    text-align: center;
-}
 .stairs td, th {
     padding: 0;
 }

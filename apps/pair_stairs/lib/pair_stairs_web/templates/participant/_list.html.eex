@@ -2,14 +2,14 @@
     <thead>
         <tr>
             <th><%= gettext("Name") %></th>
-            <th class="actions"><%= gettext("Actions") %></th>
+            <th class="actions centralized"><%= gettext("Actions") %></th>
         </tr>
     </thead>
     <tbody>
         <%= for participant <- @participants |> sorted_list() do %>
             <tr>
                 <td><%= participant.name %></td>
-                <td><%= remove_participant_button(@conn, participant.id) %></td>
+                <td class="actions centralized"><%= remove_participant_button(@conn, participant.id) %></td>
             </tr>
         <% end %>
     </tbody>

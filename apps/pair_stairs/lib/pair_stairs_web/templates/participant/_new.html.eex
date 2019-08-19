@@ -1,5 +1,5 @@
 <h2><%= gettext("New participant") %></h2>
 <%= form_for @conn, Routes.stairs_participant_path(@conn, :create, @conn.params["stairs_id"]), [as: :participant], fn f -> %>
-<%= text_input f, :name, required: true %>
+<%= text_input f, :name, required: true, autofocus: "true" %>
 <%= submit gettext("Add") %>
 <% end %>

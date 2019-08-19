@@ -10,11 +10,18 @@ defmodule PairStairsWeb.ParticipantView do
   def remove_participant_button(conn, participant_id) do
     %{"stairs_id" => stairs_id} = conn.path_params
 
-    link("Remove",
+    link("🗑",
+      title: gettext("Remove"),
       to: Routes.stairs_participant_path(conn, :delete, stairs_id, participant_id),
       method: :delete,
       data: [confirm: gettext("This action will remove any previous pair counts. Are you sure?")]
     )
+  end
+
+  def edit_participant_button(conn, participant_id) do
+    %{"stairs_id" => stairs_id} = conn.path_params
+
+    link("✏️", title: gettext("Edit"), to: "#edit=#{participant_id}")
   end
 
   def sorted_list(participants = %{}) do
