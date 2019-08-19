@@ -114,6 +114,25 @@ defmodule Repository.Parear.StairTest do
     assert [] == pair_statuses
   end
 
+  test "Persists participant update in stair", %{pair_stairs: stairs} do
+    stairs = Parear.Stairs.add_participant(stairs, "Vitor")
+    vitor = find_by_name(stairs, "Vitor")
+    {:ok, _} = stairs |> Stair.save_cascade()
+    vitor = Parear.Participant.update_name(vitor, "Vitor's New Name")
+
+    {:ok, _} =
+      stairs
+      |> Parear.Stairs.update_participant(vitor)
+      |> Stair.save_cascade()
+
+    [vitor_from_db | _rest] =
+      Stair.find_by_id(stairs.id)
+      |> Stair.load_participants()
+      |> Map.get(:participants)
+
+    assert vitor.name == vitor_from_db.name
+  end
+
   defp has_participant_named?(stair = %Stair{}, name) do
     Map.get(stair, :participants)
     |> has_participant_named?(name)
