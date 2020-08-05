@@ -14,7 +14,7 @@ config :pair_stairs, PairStairsWeb.Endpoint,
   http: [port: {:system, "PORT"}],
   server: true,
   secret_key_base: "${SECRET_KEY_BASE}",
-  url: [host: "www.pairmatrix.com", port: 443],
+  url: [host: "pairmatrix.com", port: 443],
   cache_static_manifest: "priv/static/cache_manifest.json",
   force_ssl: [
     rewrite_on: [:x_forwarded_proto]
