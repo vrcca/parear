@@ -1,0 +1,78 @@
+- hosts: localhost
+  #gather_facts: false
+  tasks:
+  - name: "Set vars"
+    set_fact:
+      selected_apikey: "{{ vps_common.apikey }}"
+      selected_servername: "{{ vps_server_name }}"
+      selected_hostname: "{{ vps_server_name }}"
+      selected_sshkey_name: "{{ vps_common.sshkey_name }}"
+      selected_image: "{{ vps_common.image }}"
+      selected_instance_type: "{{ vps_common.instance_type }}"
+      selected_region: "{{ vps_common.region }}"
+      #target_group: "group"
+
+  - name: "Ensure an SSH key is present"
+    delegate_to: localhost
+    hcloud_ssh_key:
+      api_token: "{{ selected_apikey }}"
+      name: "{{ selected_sshkey_name }}"
+      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: "Creates {{ vps_server_name }} server if not existing"
+    delegate_to: localhost
+    hcloud_server:
+      name: "{{ vps_server_name }}" #
+      server_type: "{{ selected_instance_type }}"
+      image: "{{ selected_image }}" #
+      location: "{{ selected_region }}" #
+      ssh_keys: #
+        - "{{ selected_sshkey_name }}"
+      state: present
+
+  - name: "Ensure {{ vps_server_name }} has started"
+    local_action:
+      module: hcloud_server
+      name: "{{ vps_server_name }}" #
+      state: started
+
+  - name: "Get public IP of ansible host"
+    local_action:
+      module: ipify_facts
+    when: not(ansible_facts.ipify_public_ip is defined)
+
+  - name: "Refresh inventory"
+    delegate_to: localhost
+    meta: refresh_inventory
+
+- hosts: "{{ vps_server_name }}"
+  remote_user: root
+  tasks:
+  - name: create the 'ubuntu' user
+    user: name=ubuntu groups=ubuntu state=present createhome=yes shell=/bin/bash
+
+  - name: "set up authorized keys for the ubuntu user"
+    authorized_key: user=ubuntu key="{{item}}"
+    with_file:
+      - ~/.ssh/id_rsa.pub
+
+  - name: "update cache"
+    apt:
+      update_cache: yes
+
+  - name: "install packages"
+    apt:
+      pkg:
+        - ntp
+        - build-essential
+        - vim
+        - git
+      state: present
+      autoclean: yes
+
+  - name: "Get the IP Address"
+    set_fact:
+      server_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+
+  - debug:
+      msg: "IP Address: {{ server_ip }}"

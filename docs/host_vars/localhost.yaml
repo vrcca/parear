@@ -1,0 +1,8 @@
+---
+vps_common:
+  min_balance: -5
+  image: "ubuntu-20.04"
+  instance_type: "cx11"
+  region: "nbg1"
+  sshkey_name: "vitor-laptop"
+  apikey: "{{ lookup('env','HCLOUD_TOKEN') }}"
