@@ -1,87 +1,14 @@
-- hosts: localhost
-  #gather_facts: false
-  tasks:
-  - name: "Set vars"
-    set_fact:
-      selected_apikey: "{{ vps_common.apikey }}"
-      selected_servername: "{{ vps_server_name }}"
-      selected_hostname: "{{ vps_server_name }}"
-      selected_sshkey_name: "{{ vps_common.sshkey_name }}"
-      selected_image: "{{ vps_common.image }}"
-      selected_instance_type: "{{ vps_common.instance_type }}"
-      selected_region: "{{ vps_common.region }}"
-      #target_group: "group"
-
-  - name: "Ensure an SSH key is present"
-    delegate_to: localhost
-    hcloud_ssh_key:
-      api_token: "{{ selected_apikey }}"
-      name: "{{ selected_sshkey_name }}"
-      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-
-  - name: "Creates {{ vps_server_name }} server if not existing"
-    delegate_to: localhost
-    hcloud_server:
-      name: "{{ vps_server_name }}"
-      server_type: "{{ selected_instance_type }}"
-      image: "{{ selected_image }}"
-      location: "{{ selected_region }}"
-      ssh_keys:
-        - "{{ selected_sshkey_name }}"
-      state: present
-
-  - name: "Ensure {{ vps_server_name }} has started"
-    local_action:
-      module: hcloud_server
-      name: "{{ vps_server_name }}" #
-      state: started
-
-  - name: "Create a Floating-IP"
-    hcloud_floating_ip:
-      name: "{{ vps_server_name }}_floating_ip"
-      home_location: "{{ selected_region }}"
-      type: ipv4
-      delete_protection: true
-      state: present
-
-  - name: "Assign a Floating IP to {{ vps_server_name }}"
-    hcloud_floating_ip:
-      name: "{{ vps_server_name }}_floating_ip"
-      server: "{{ vps_server_name }}"
-      state: present
-
-  - name: "Get public IP of ansible host"
-    local_action:
-      module: ipify_facts
-    when: not(ansible_facts.ipify_public_ip is defined)
-
-  - name: "Refresh inventory"
-    delegate_to: localhost
-    meta: refresh_inventory
-
-- hosts: "{{ vps_server_name }}"
-  remote_user: root
-
-  roles:
-   - geerlingguy.swap
-   - dokku_bot.ansible_dokku
-
+- name: Prepare the web server
+  import_playbook: playbooks/create_server.yaml
   vars:
-    swap_file_size_mb: '2048'
-    dokku_version: 0.24.9
-    dokku_users:
-      - name: Vitor Cavalcanti
-        username: vrcca
-        ssh_key: "{{lookup('file', '~/.ssh/id_rsa.pub')}}"
-    dokku_plugins:
-      - name: clone
-        url: https://github.com/crisward/dokku-clone.git
-      - name: letsencrypt
-        url: https://github.com/dokku/dokku-letsencrypt.git
-      - name: postgres
-        url: https://github.com/dokku/dokku-postgres.git
+    api_key: "{{ vps_common.apikey }}"
+    server_name: "{{ vps_server_name }}"
+    sshkey_name: "{{ vps_common.sshkey_name }}"
+    image: "{{ vps_common.image }}"
+    instance_type: "{{ vps_common.instance_type }}"
+    region: "{{ vps_common.region }}"
 
-  tasks:
-    - name: "Create 'parear' app"
-      dokku_app:
-        app: &appname parear
+- name: Prepare the web server 
+  import_playbook: playbooks/install_dokku.yaml
+  vars:
+    server_name: "{{ vps_server_name }}"

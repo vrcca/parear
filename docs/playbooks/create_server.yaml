@@ -1,0 +1,48 @@
+- hosts: localhost
+  tasks:
+  - name: "Ensure an SSH key is present"
+    delegate_to: localhost
+    hcloud_ssh_key:
+      api_token: "{{ api_key }}"
+      name: "{{ sshkey_name }}"
+      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+
+  - name: "Creates {{ server_name }} server if not existing"
+    delegate_to: localhost
+    hcloud_server:
+      name: "{{ server_name }}"
+      server_type: "{{ instance_type }}"
+      image: "{{ image }}"
+      location: "{{ region }}"
+      ssh_keys:
+        - "{{ sshkey_name }}"
+      state: present
+
+  - name: "Ensure {{ server_name }} has started"
+    local_action:
+      module: hcloud_server
+      name: "{{ server_name }}"
+      state: started
+
+  - name: "Create a Floating-IP"
+    hcloud_floating_ip:
+      name: "{{ server_name }}_floating_ip"
+      home_location: "{{ region }}"
+      type: ipv4
+      delete_protection: true
+      state: present
+
+  - name: "Assign a Floating IP to {{ server_name }}"
+    hcloud_floating_ip:
+      name: "{{ server_name }}_floating_ip"
+      server: "{{ server_name }}"
+      state: present
+
+  - name: "Get public IP of ansible host"
+    local_action:
+      module: ipify_facts
+    when: not(ansible_facts.ipify_public_ip is defined)
+
+  - name: "Refresh inventory"
+    delegate_to: localhost
+    meta: refresh_inventory
