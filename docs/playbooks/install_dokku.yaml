@@ -28,7 +28,7 @@
       dokku_domains:
         app: *app_name
         domains:
-          - beta.pairmatrix.com
+          - "{{ web_host }}"
 
     - name: Sets environment configuration
       dokku_config:
@@ -38,7 +38,7 @@
           PORT: "5000"
           SECRET_KEY_BASE: "{{ secret_key_base }}"
           LC_ALL: en_US.utf8
-          WEB_HOST: "{{ public_ip }}"
+          WEB_HOST: "{{ web_host }}"
 
     - name: Creates database
       dokku_service_create:
@@ -51,11 +51,11 @@
         name: *db_name
         service: postgres
 
-    - name: Enables the letsencrypt plugin
-      dokku_letsencrypt:
-        app: *app_name
-
     - name: Deploys app
       dokku_clone:
         app: *app_name
         repository: https://github.com/vrcca/parear
+
+    - name: Enables the letsencrypt plugin
+      dokku_letsencrypt:
+        app: *app_name
