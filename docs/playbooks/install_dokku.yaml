@@ -5,7 +5,6 @@
 
   vars:
     swap_file_size_mb: '2048'
-    dokku_vhost_enable: false
     dokku_users:
       - name: Vitor Cavalcanti
         username: vrcca
@@ -25,6 +24,12 @@
       dokku_app:
         app: &app_name parear
 
+    - name: Setups app domain
+      dokku_domains:
+        app: *app_name
+        domains:
+          - beta.pairmatrix.com
+
     - name: Sets environment configuration
       dokku_config:
         app: *app_name
@@ -35,29 +40,22 @@
           LC_ALL: en_US.utf8
           WEB_HOST: "{{ public_ip }}"
 
-    - name: Sets proxy ports
-      dokku_ports:
-        app: *app_name
-        mappings:
-            - http:80:5000
-            - https:443:5000
-
-    - name: Creates pairmatrix database
+    - name: Creates database
       dokku_service_create:
         name: &db_name pairmatrix
         service: postgres
 
-    - name: Links database pairmatrix to app parear
+    - name: Links database to app
       dokku_service_link:
         app: *app_name
         name: *db_name
         service: postgres
 
-    - name: Clones parear app
+    - name: Enables the letsencrypt plugin
+      dokku_letsencrypt:
+        app: *app_name
+
+    - name: Deploys app
       dokku_clone:
         app: *app_name
         repository: https://github.com/vrcca/parear
-
-    - name: Enable the letsencrypt plugin
-      dokku_letsencrypt:
-        app: *app_name
