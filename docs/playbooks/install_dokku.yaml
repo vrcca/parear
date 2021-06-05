@@ -35,14 +35,6 @@
           LC_ALL: en_US.utf8
           WEB_HOST: "{{ public_ip }}"
 
-
-    - name: Configures ports 80 and 443
-      dokku_ports:
-        app: *app_name
-        mappings:
-          - http:80:5000
-          - https:443:5000
-
     - name: Creates pairmatrix database
       dokku_service_create:
         name: &db_name pairmatrix
@@ -53,3 +45,8 @@
         app: *app_name
         name: *db_name
         service: postgres
+
+    - name: Clones parear app
+      dokku_clone:
+        app: *app_name
+        repository: https://github.com/vrcca/parear
