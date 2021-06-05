@@ -22,32 +22,33 @@
   tasks:
     - name: "Create 'parear' app"
       dokku_app:
-        app: &appname parear
+        app: &app_name parear
 
     - name: Sets environment configuration
       dokku_config:
-        app: *appname
+        app: *app_name
         config:
           DOKKU_LETSENCRYPT_EMAIL: contact@pairmatrix.com
           PORT: "5000"
           MIX_ENV: prod
           SECRET_KEY_BASE: "{{ secret_key_base }}"
+          LC_ALL: en_US.utf8
 
 
     - name: Configures ports 80 and 443
       dokku_ports:
-        app: *appname
+        app: *app_name
         mappings:
           - http:80:5000
           - https:443:5000
 
-    - name: Create database
+    - name: Creates pairmatrix database
       dokku_service_create:
-        name: *appname
-        service: redis
+        name: &db_name pairmatrix
+        service: postgres
 
-    - name: Links database *appname to *appname
+    - name: Links database pairmatrix to app parear
       dokku_service_link:
-        app: *appname
-        name: *appname
+        app: *db_name
+        name: pairmatrix
         service: postgres
