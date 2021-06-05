@@ -31,10 +31,16 @@
         config:
           DOKKU_LETSENCRYPT_EMAIL: contact@pairmatrix.com
           PORT: "5000"
-          MIX_ENV: prod
           SECRET_KEY_BASE: "{{ secret_key_base }}"
           LC_ALL: en_US.utf8
           WEB_HOST: "{{ public_ip }}"
+
+    - name: Sets proxy ports
+      dokku_ports:
+        app: *app_name
+        mappings:
+            - http:80:5000
+            - https:443:5000
 
     - name: Creates pairmatrix database
       dokku_service_create:
