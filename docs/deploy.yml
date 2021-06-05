@@ -13,3 +13,4 @@
   vars:
     secret_key_base: "{{ secret_key_base }}"
     server_name: "{{ vps_server_name }}"
+    public_ip: "188.34.192.117"

@@ -33,6 +33,7 @@
           MIX_ENV: prod
           SECRET_KEY_BASE: "{{ secret_key_base }}"
           LC_ALL: en_US.utf8
+          WEB_HOST: "{{ public_ip }}"
 
 
     - name: Configures ports 80 and 443
@@ -49,6 +50,6 @@
 
     - name: Links database pairmatrix to app parear
       dokku_service_link:
-        app: *db_name
-        name: pairmatrix
+        app: *app_name
+        name: *db_name
         service: postgres

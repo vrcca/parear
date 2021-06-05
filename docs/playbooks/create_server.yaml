@@ -42,6 +42,7 @@
     local_action:
       module: ipify_facts
     when: not(ansible_facts.ipify_public_ip is defined)
+    register: public_ip
 
   - name: "Refresh inventory"
     delegate_to: localhost
