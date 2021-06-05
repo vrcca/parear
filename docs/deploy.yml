@@ -11,4 +11,5 @@
 - name: Prepare the web server 
   import_playbook: playbooks/install_dokku.yaml
   vars:
+    secret_key_base: "{{ secret_key_base }}"
     server_name: "{{ vps_server_name }}"
