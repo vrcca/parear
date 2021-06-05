@@ -22,11 +22,11 @@
   - name: "Creates {{ vps_server_name }} server if not existing"
     delegate_to: localhost
     hcloud_server:
-      name: "{{ vps_server_name }}" #
+      name: "{{ vps_server_name }}"
       server_type: "{{ selected_instance_type }}"
-      image: "{{ selected_image }}" #
-      location: "{{ selected_region }}" #
-      ssh_keys: #
+      image: "{{ selected_image }}"
+      location: "{{ selected_region }}"
+      ssh_keys:
         - "{{ selected_sshkey_name }}"
       state: present
 
@@ -35,6 +35,20 @@
       module: hcloud_server
       name: "{{ vps_server_name }}" #
       state: started
+
+  - name: "Create a Floating-IP"
+    hcloud_floating_ip:
+      name: "{{ vps_server_name }}_floating_ip"
+      home_location: "{{ selected_region }}"
+      type: ipv4
+      delete_protection: true
+      state: present
+
+  - name: "Assign a Floating IP to {{ vps_server_name }}"
+    hcloud_floating_ip:
+      name: "{{ vps_server_name }}_floating_ip"
+      server: "{{ vps_server_name }}"
+      state: present
 
   - name: "Get public IP of ansible host"
     local_action:
@@ -47,32 +61,27 @@
 
 - hosts: "{{ vps_server_name }}"
   remote_user: root
+
+  roles:
+   - geerlingguy.swap
+   - dokku_bot.ansible_dokku
+
+  vars:
+    swap_file_size_mb: '2048'
+    dokku_version: 0.24.9
+    dokku_users:
+      - name: Vitor Cavalcanti
+        username: vrcca
+        ssh_key: "{{lookup('file', '~/.ssh/id_rsa.pub')}}"
+    dokku_plugins:
+      - name: clone
+        url: https://github.com/crisward/dokku-clone.git
+      - name: letsencrypt
+        url: https://github.com/dokku/dokku-letsencrypt.git
+      - name: postgres
+        url: https://github.com/dokku/dokku-postgres.git
+
   tasks:
-  - name: create the 'ubuntu' user
-    user: name=ubuntu groups=ubuntu state=present createhome=yes shell=/bin/bash
-
-  - name: "set up authorized keys for the ubuntu user"
-    authorized_key: user=ubuntu key="{{item}}"
-    with_file:
-      - ~/.ssh/id_rsa.pub
-
-  - name: "update cache"
-    apt:
-      update_cache: yes
-
-  - name: "install packages"
-    apt:
-      pkg:
-        - ntp
-        - build-essential
-        - vim
-        - git
-      state: present
-      autoclean: yes
-
-  - name: "Get the IP Address"
-    set_fact:
-      server_ip: "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
-
-  - debug:
-      msg: "IP Address: {{ server_ip }}"
+    - name: "Create 'parear' app"
+      dokku_app:
+        app: &appname parear
