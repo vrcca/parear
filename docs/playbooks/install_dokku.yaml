@@ -5,6 +5,7 @@
 
   vars:
     swap_file_size_mb: '2048'
+    dokku_vhost_enable: false
     dokku_users:
       - name: Vitor Cavalcanti
         username: vrcca
@@ -50,3 +51,7 @@
       dokku_clone:
         app: *app_name
         repository: https://github.com/vrcca/parear
+
+    - name: Enable the letsencrypt plugin
+      dokku_letsencrypt:
+        app: *app_name
