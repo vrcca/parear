@@ -53,6 +53,7 @@
 
     - name: Checks if the app is already deployed
       shell: "dokku git:report {{ app_name }} --git-sha"
+      ignore_errors: true
       register: git_result
 
     - name: Deploys app if missing
