@@ -52,7 +52,7 @@
         service: postgres
 
     - name: Deploys app
-      dokku_sync:
+      dokku_git_sync:
         app: *app_name
         remote: git@github.com:vrcca/parear.git
 
