@@ -3,9 +3,8 @@
   - name: "Ensure an SSH key is present"
     delegate_to: localhost
     hcloud_ssh_key:
-      api_token: "{{ api_key }}"
-      name: "{{ sshkey_name }}"
-      public_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
+      name: "localhost-public-key"
+      public_key: "{{ public_ssh_key }}"
 
   - name: "Creates {{ server_name }} server if not existing"
     delegate_to: localhost
@@ -15,7 +14,7 @@
       image: "{{ image }}"
       location: "{{ region }}"
       ssh_keys:
-        - "{{ sshkey_name }}"
+        - "localhost-public-key"
       state: present
 
   - name: "Ensure {{ server_name }} has started"
@@ -38,6 +37,15 @@
       name: "{{ server_name }}_floating_ip"
       server: "{{ server_name }}"
       state: present
+
+  - name: Create a DNS 'A' record in Cloudflare
+    community.general.cloudflare_dns:
+      zone: "{{ dns_zone }}"
+      record: "{{ dns_record }}"
+      type: A
+      value: "{{ floating_ip_result.hcloud_floating_ip.ip }}"
+      api_token: "{{ dns_api_token }}"
+      proxied: true
 
   - name: "Get public IP of ansible host"
     local_action:

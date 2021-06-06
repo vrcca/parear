@@ -15,8 +15,16 @@ Currently this app is deployed in hetzner.com. It uses Ansible and Dokku to mana
 4. Export the `SECRET_KEY_BASE` environment variable.
 
 
+## Preparing Cloudflare
+
+1. Import your domain in Cloudflare.com
+2. Create an API token: https://dash.cloudflare.com/profile/api-tokens
+3. Export it to `CLOUDFLARE_TOKEN` environment variable.
+
 ## Deployment 
-Ansible should do all the heavy lifting. So just run:
+ Ansible should do all the heavy lifting.
+
+ Before you deploy, review `host_vars/localhost.yaml`. After that, just run:
 ```
 ansible-playbook -u root -i hcloud.yaml -e vps_server_name=parear -e deploy.yml
 ```

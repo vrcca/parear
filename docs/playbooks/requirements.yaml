@@ -5,4 +5,4 @@ roles:
 
 collections:
   - name: hetzner.hcloud
-  - name: geerlingguy.php_roles
+  - name: community.general

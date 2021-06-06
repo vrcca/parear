@@ -1,22 +1,7 @@
 - hosts: localhost
   tasks:
-    - name: "Set vars"
-      set_fact:
-        selected_apikey: "{{ vps_common.apikey }}"
-        selected_servername: "{{ vps_server_name }}"
-        selected_hostname: "{{ vps_server_name }}"
-        selected_sshkey_name: "{{ vps_common.sshkey_name }}"
-        selected_image: "{{ vps_common.image }}"
-        selected_instance_type: "{{ vps_common.instance_type }}"
-        selected_region: "{{ vps_common.region }}"
-
     - name: "Destroys {{ vps_server_name }} server"
       delegate_to: localhost
       hcloud_server:
         name: "{{ vps_server_name }}"
-        server_type: "{{ selected_instance_type }}"
-        image: "{{ selected_image }}"
-        location: "{{ selected_region }}"
-        ssh_keys:
-          - "{{ selected_sshkey_name }}"
         state: absent

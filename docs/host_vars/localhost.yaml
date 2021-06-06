@@ -3,4 +3,9 @@ vps_common:
   image: "ubuntu-20.04"
   instance_type: "cx11"
   region: "nbg1"
-  sshkey_name: "vitor-laptop"
+
+dns_common:
+  record: "beta"
+  zone: "pairmatrix.com"
+  hostname: "beta.pairmatrix.com"
+  api_token: "{{ lookup('env','CLOUDFLARE_TOKEN') }}"
