@@ -52,9 +52,9 @@
         service: postgres
 
     - name: Deploys app
-      dokku_clone:
+      dokku_sync:
         app: *app_name
-        repository: https://github.com/vrcca/parear
+        remote: git@github.com:vrcca/parear.git
 
     - name: Enables the letsencrypt plugin
       dokku_letsencrypt:
