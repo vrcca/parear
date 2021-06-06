@@ -24,7 +24,12 @@ Currently this app is deployed in hetzner.com. It uses Ansible and Dokku to mana
 ## Deployment 
  Ansible should do all the heavy lifting.
 
- Before you deploy, review `variables.yaml`. After that, just run:
+ Before you deploy, review `deploy.yaml`. After that, just run:
 ```
 ansible-playbook -u root -i hcloud.yaml -e vps_server_name=parear -e deploy.yml
+```
+
+## Destroy
+```
+ansible-playbook -u root -i hcloud.yaml -e vps_server_name=parear -e destroy.yml
 ```

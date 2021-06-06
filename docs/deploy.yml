@@ -1,25 +1,18 @@
-- name: Imports variables
-  hosts:
-    - localhost
-    - "{{ vps_server_name }}"
-  tasks:
-    - include_vars: variables.yaml
-
 - name: Prepare the web server
   import_playbook: playbooks/create_server.yaml
   vars:
     server_name: "{{ vps_server_name }}"
     public_ssh_key: "{{ lookup('file', '~/.ssh/id_rsa.pub') }}"
-    image: "{{ vps_common.image }}"
-    instance_type: "{{ vps_common.instance_type }}"
-    region: "{{ vps_common.region }}"
-    dns_api_token: "{{ dns_common.api_token }}"
-    dns_record: "{{ dns_common.record }}"
-    dns_zone: "{{ dns_common.zone }}"
+    image: "ubuntu-20.04"
+    instance_type: "cx11"
+    region: "nbg1"
+    dns_api_token: "{{ lookup('env','CLOUDFLARE_TOKEN') }}"
+    dns_record: "beta"
+    dns_zone: "pairmatrix.com"
     
 - name: Prepare the web server 
   import_playbook: playbooks/install_dokku.yaml
   vars:
     server_name: "{{ vps_server_name }}"
-    web_host: "{{ dns_common.hostname }}"
+    web_host: "beta.pairmatrix.com"
     secret_key_base: "{{ lookup('env','SECRET_KEY_BASE') }}"
