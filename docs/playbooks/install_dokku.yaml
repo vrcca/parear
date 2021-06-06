@@ -20,9 +20,9 @@
         url: https://github.com/michaelshobbs/dokku-logspout.git
 
   tasks:
-    - name: "Create 'parear' app"
+    - name: "Create '{{ app_name }}' app"
       dokku_app:
-        app: &app_name parear
+        app: &app_name "{{ app_name }}"
 
     - name: Setups app domain
       dokku_domains:
@@ -51,10 +51,13 @@
         name: *db_name
         service: postgres
 
-    - name: Deploys app
-      dokku_git_sync:
-        app: *app_name
-        remote: git@github.com:vrcca/parear.git
+    - name: Checks if the app is already deployed
+      shell: "dokku git:report {{ app_name }} --git-sha"
+      register: git_result
+
+    - name: Deploys app if missing
+      shell: "dokku git:sync --build {{ app_name }} {{ git_repo }}"
+      when: git_result.stdout == ""
 
     - name: Enables the letsencrypt plugin
       dokku_letsencrypt:

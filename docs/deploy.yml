@@ -13,6 +13,8 @@
 - name: Prepare the web server 
   import_playbook: playbooks/install_dokku.yaml
   vars:
+    app_name: parear
+    git_repo: https://github.com/vrcca/parear.git
     server_name: "{{ vps_server_name }}"
     web_host: "beta.pairmatrix.com"
     secret_key_base: "{{ lookup('env','SECRET_KEY_BASE') }}"
