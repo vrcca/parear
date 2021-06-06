@@ -1,3 +1,10 @@
+- name: Imports variables
+  hosts:
+    - localhost
+    - "{{ vps_server_name }}"
+  tasks:
+    - include_vars: variables.yaml
+
 - name: Prepare the web server
   import_playbook: playbooks/create_server.yaml
   vars:
