@@ -1,16 +1,16 @@
 - name: Prepare the web server
   import_playbook: playbooks/create_server.yaml
   vars:
-    api_key: "{{ vps_common.apikey }}"
     server_name: "{{ vps_server_name }}"
     sshkey_name: "{{ vps_common.sshkey_name }}"
     image: "{{ vps_common.image }}"
     instance_type: "{{ vps_common.instance_type }}"
     region: "{{ vps_common.region }}"
-
+    api_key: "{{ lookup('env','HCLOUD_TOKEN') }}"
+    
 - name: Prepare the web server 
   import_playbook: playbooks/install_dokku.yaml
   vars:
-    secret_key_base: "{{ secret_key_base }}"
     server_name: "{{ vps_server_name }}"
     web_host: "beta.pairmatrix.com"
+    secret_key_base: "{{ lookup('env','SECRET_KEY_BASE') }}"

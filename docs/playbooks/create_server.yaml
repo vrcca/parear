@@ -24,13 +24,14 @@
       name: "{{ server_name }}"
       state: started
 
-  - name: "Create a Floating-IP"
+  - name: "Create a Floating IP"
     hcloud_floating_ip:
       name: "{{ server_name }}_floating_ip"
       home_location: "{{ region }}"
       type: ipv4
       delete_protection: true
       state: present
+    register: floating_ip_result
 
   - name: "Assign a Floating IP to {{ server_name }}"
     hcloud_floating_ip:
@@ -46,3 +47,31 @@
   - name: "Refresh inventory"
     delegate_to: localhost
     meta: refresh_inventory
+
+- hosts: "{{ server_name }}"
+  tasks:
+    - name: "Sets Floating IP fact"
+      set_fact:
+        floating_ip: "{{ hostvars['localhost']['floating_ip_result'].hcloud_floating_ip.ip }}"
+        netplan_config_file: "/etc/netplan/60-floating-ip.yaml"
+
+    - name: "Checks netplan exists"
+      stat:
+        path: "{{ netplan_config_file }}"
+      register: netplan_file
+
+    - name: "Persists Floating IP in {{ server_name }} eth0"
+      template:
+        src: "templates/netplan_60-floating-ip.yaml.j2"
+        dest: "{{ netplan_config_file }}"
+      when: netplan_file.stat.exists == False
+
+    - name: Apply netplan
+      command: sudo netplan apply
+      ignore_errors: true
+      when: netplan_file.stat.exists == False
+
+    - name: Ensure server is reachable
+      shell: ping -c 1 -w 2 '{{ floating_ip }}'
+      ignore_errors: true
+      when: netplan_file.stat.exists == False

@@ -1,0 +1,8 @@
+---
+roles:
+   - name: geerlingguy.swap
+   - name: dokku_bot.ansible_dokku
+
+collections:
+  - name: hetzner.hcloud
+  - name: geerlingguy.php_roles
